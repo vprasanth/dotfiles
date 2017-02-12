@@ -19,4 +19,6 @@ set shiftwidth=4
 inoremap jk <esc>
 set nocompatible
 
+set backspace=indent,eol,start
+
 execute pathogen#infect()
