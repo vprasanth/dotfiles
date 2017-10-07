@@ -13,35 +13,35 @@ set wildmenu
 set incsearch 
 set hlsearch
 
-set tabstop=4
-set softtabstop=4
+set tabstop=2
+set softtabstop=2
 set expandtab
-set shiftwidth=4
+set shiftwidth=2
 
 inoremap jk <esc>
 
 set backspace=indent,eol,start
 
 " vundle configuration
-set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" set nocompatible
+" filetype off
+" set rtp+=~/.vim/bundle/Vundle.vim
+" call vundle#begin()
 
 " install these plugins
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'scrooloose/nerdtree'
-Plugin 'quramy/tsuquyomi'
-Plugin 'bling/vim-airline'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'shougo/vimproc.vim'
-Plugin 'bubujka/emmet-vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'scrooloose/vim-fugitive'
-Plugin 'pangloss/vim-javascript'
-Plugin 'flazz/vim-colorschemes'
+" Plugin 'VundleVim/Vundle.vim'
+" Plugin 'scrooloose/nerdtree'
+" Plugin 'quramy/tsuquyomi'
+" Plugin 'bling/vim-airline'
+" Plugin 'airblade/vim-gitgutter'
+" Plugin 'shougo/vimproc.vim'
+" Plugin 'bubujka/emmet-vim'
+" Plugin 'scrooloose/syntastic'
+" Plugin 'leafgarland/typescript-vim'
+" Plugin 'scrooloose/vim-fugitive'
+" Plugin 'pangloss/vim-javascript'
+" Plugin 'flazz/vim-colorschemes'
 
-call vundle#end()
-filetype plugin indent on
+" call vundle#end()
+" filetype plugin indent on
 
