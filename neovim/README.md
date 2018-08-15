@@ -12,3 +12,5 @@
 - configure plugins
   - setup location for plugins to install
 
+### gotchas
+- certain plugins have dependencies on python and node (`npm i -g neovim`) [node-client](https://github.com/neovim/node-client)
