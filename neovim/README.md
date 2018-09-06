@@ -1,4 +1,4 @@
-# neovim setup 
+# neovim setup (draft)
 
 ### install
 `brew install neovim`
