@@ -1,5 +1,4 @@
 syntax enable
-set t_Co=256
 set number
 set showcmd
 set cursorline
@@ -22,26 +21,25 @@ inoremap jk <esc>
 
 set backspace=indent,eol,start
 
-" vundle configuration
-" set nocompatible
-" filetype off
-" set rtp+=~/.vim/bundle/Vundle.vim
-" call vundle#begin()
+filetype plugin indent on
+call plug#begin('~/.vim/plugged')
+Plug 'tpope/vim-sensible'
+Plug 'https://github.com/sheerun/vim-polyglot.git'
+Plug 'scrooloose/nerdtree'
+Plug 'bling/vim-airline'
+Plug 'tpope/vim-fugitive'
+Plug 'bling/vim-bufferline'
+Plug 'joegesualdo/jsdoc.vim'
+Plug 'https://github.com/pangloss/vim-javascript.git'
+Plug 'https://github.com/w0ng/vim-hybrid.git'
+Plug 'vim-scripts/Ambient-Color-Scheme'
+Plug 'pangloss/vim-javascript'
+Plug 'sjl/badwolf'
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'npm install',
+  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
+call plug#end()
 
-" install these plugins
-" Plugin 'VundleVim/Vundle.vim'
-" Plugin 'scrooloose/nerdtree'
-" Plugin 'quramy/tsuquyomi'
-" Plugin 'bling/vim-airline'
-" Plugin 'airblade/vim-gitgutter'
-" Plugin 'shougo/vimproc.vim'
-" Plugin 'bubujka/emmet-vim'
-" Plugin 'scrooloose/syntastic'
-" Plugin 'leafgarland/typescript-vim'
-" Plugin 'scrooloose/vim-fugitive'
-" Plugin 'pangloss/vim-javascript'
-" Plugin 'flazz/vim-colorschemes'
-
-" call vundle#end()
-" filetype plugin indent on
-
+let g:javascript_plugin_jsdoc = 1
+let g:hybrid_custom_term_colors = 1
+let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
