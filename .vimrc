@@ -40,6 +40,7 @@ Plug 'prettier/vim-prettier', {
   \ 'do': 'npm install',
   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
 Plug 'vim-syntastic/syntastic'
+Plug 'fatih/vim-go'
 call plug#end()
 
 let g:javascript_plugin_jsdoc = 1
@@ -59,6 +60,14 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 1
+
+let g:syntastic_go_checkers = ['govet', 'errcheck', 'go']
+let g:go_list_type = "quickfix"
+
+autocmd FileType typescript nmap <buffer> <Leader>e <Plug>(TsuquyomiRenameSymbol)
+autocmd FileType typescript nmap <buffer> <Leader>E <Plug>(TsuquyomiRenameSymbolC)
+
+let NERDTreeHijackNetrw=1
 
 color minimalist
 set background=dark
