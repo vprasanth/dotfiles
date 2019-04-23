@@ -30,12 +30,12 @@ Plug 'tpope/vim-fugitive'
 Plug 'bling/vim-bufferline'
 Plug 'joegesualdo/jsdoc.vim'
 Plug 'https://github.com/pangloss/vim-javascript.git'
-Plug 'dikiaap/minimalist'
-Plug 'https://github.com/w0ng/vim-hybrid.git'
+"Plug 'dikiaap/minimalist'
+"Plug 'https://github.com/w0ng/vim-hybrid.git'
 Plug 'pangloss/vim-javascript'
 Plug 'Quramy/tsuquyomi'
 Plug 'palantir/tslint'
-Plug 'ervandew/supertab'
+"Plug 'ervandew/supertab'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'npm install',
   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
@@ -44,11 +44,11 @@ Plug 'fatih/vim-go'
 call plug#end()
 
 let g:javascript_plugin_jsdoc = 1
-let g:hybrid_custom_term_colors = 1
+" let g:hybrid_custom_term_colors = 1
 " let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
 let g:tsuquyomi_completion_detail = 1
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-let g:SuperTabClosePreviewOnPopupClose = 1
+"let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+"let g:SuperTabClosePreviewOnPopupClose = 1
 let g:NERDTreeNodeDelimiter = "\u00a0"
 
 set statusline+=%#warningmsg#
@@ -69,6 +69,6 @@ autocmd FileType typescript nmap <buffer> <Leader>E <Plug>(TsuquyomiRenameSymbol
 
 let NERDTreeHijackNetrw=1
 
-color minimalist
-set background=dark
-let g:airline_theme='minimalist'
+"color minimalist
+"set background=dark
+"let g:airline_theme='minimalist'
