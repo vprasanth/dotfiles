@@ -41,6 +41,7 @@ Plug 'prettier/vim-prettier', {
   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
 Plug 'vim-syntastic/syntastic'
 Plug 'fatih/vim-go'
+Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
 let g:javascript_plugin_jsdoc = 1
@@ -72,3 +73,5 @@ let NERDTreeHijackNetrw=1
 "color minimalist
 "set background=dark
 "let g:airline_theme='minimalist'
+let g:dracula_italic = 0
+color dracula
