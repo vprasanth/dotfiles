@@ -75,3 +75,4 @@ let NERDTreeHijackNetrw=1
 "let g:airline_theme='minimalist'
 let g:dracula_italic = 0
 color dracula
+hi Normal guibg=NONE ctermbg=NONE
