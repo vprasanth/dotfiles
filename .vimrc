@@ -28,7 +28,6 @@ Plug 'scrooloose/nerdtree'
 Plug 'bling/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'bling/vim-bufferline'
-Plug 'joegesualdo/jsdoc.vim'
 Plug 'https://github.com/pangloss/vim-javascript.git'
 "Plug 'dikiaap/minimalist'
 "Plug 'https://github.com/w0ng/vim-hybrid.git'
@@ -37,11 +36,16 @@ Plug 'Quramy/tsuquyomi'
 Plug 'palantir/tslint'
 "Plug 'ervandew/supertab'
 Plug 'prettier/vim-prettier', {
-  \ 'do': 'npm install',
-  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
+      \ 'do': 'npm install',
+      \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
 Plug 'vim-syntastic/syntastic'
 Plug 'fatih/vim-go'
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'wakatime/vim-wakatime'
+Plug 'heavenshell/vim-jsdoc', { 
+      \ 'for': ['javascript', 'javascript.jsx','typescript'], 
+      \ 'do': 'make install'
+      \}
 call plug#end()
 
 let g:javascript_plugin_jsdoc = 1
@@ -70,8 +74,7 @@ autocmd FileType typescript nmap <buffer> <Leader>E <Plug>(TsuquyomiRenameSymbol
 
 let NERDTreeHijackNetrw=1
 
-"color minimalist
 "set background=dark
 "let g:airline_theme='minimalist'
-let g:dracula_italic = 0
-color dracula
+"let g:dracula_italic = 0
+color default
