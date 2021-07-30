@@ -37,10 +37,10 @@ Plug 'vim-syntastic/syntastic'
 Plug 'fatih/vim-go'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'wakatime/vim-wakatime'
-Plug 'heavenshell/vim-jsdoc', { 
-      \ 'for': ['javascript', 'javascript.jsx','typescript'], 
-      \ 'do': 'make install'
-      \}
+" Plug 'heavenshell/vim-jsdoc', { 
+"       \ 'for': ['javascript', 'javascript.jsx','typescript'], 
+"       \ 'do': 'make install'
+"       \}
 Plug 'lifepillar/vim-mucomplete'
 Plug 'airblade/vim-gitgutter'
 call plug#end()
