@@ -32,7 +32,7 @@ Plug 'bling/vim-bufferline'
 Plug 'pangloss/vim-javascript'
 Plug 'prettier/vim-prettier', {
       \ 'do': 'npm install',
-      \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue'] }
+      \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'html'] }
 Plug 'vim-syntastic/syntastic'
 Plug 'fatih/vim-go'
 Plug 'dracula/vim', { 'as': 'dracula' }
