@@ -6,7 +6,8 @@ set wildmenu
 set lazyredraw
 set showmatch
 set path+=**
-set t_Co=256
+" set t_Co=256
+set re=0
 
 set incsearch 
 set hlsearch
@@ -15,6 +16,9 @@ set expandtab
 set shiftwidth=2
 set softtabstop=2
 inoremap jk <esc>
+set textwidth=80
+set colorcolumn=80
+set wrap linebreak nolist
 
 set backspace=indent,eol,start
 
@@ -39,6 +43,10 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'wakatime/vim-wakatime'
 "Plug 'lifepillar/vim-mucomplete'
 Plug 'airblade/vim-gitgutter'
+Plug 'f-person/git-blame.nvim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
 call plug#end()
 
 let g:javascript_plugin_jsdoc = 1
@@ -72,9 +80,12 @@ let g:go_list_type = "quickfix"
 let g:airline_powerline_fonts = 1
 let NERDTreeHijackNetrw=1
 
+" theme!!
 let g:dracula_italic = 0
 set background=dark
 color dracula
+" colorscheme onehalfdark
+let g:airline_theme='dracula'
 
 set completeopt+=menuone
 set shortmess+=c
@@ -151,4 +162,6 @@ else
   inoremap <silent><expr> <c-@> coc#refresh()
 endif
 let g:airline#extensions#coc#enabled = 1
+let g:gitblame_ignored_filetypes = ['nerdtree']
 " set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+setlocal spell spelllang=en_us
