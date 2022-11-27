@@ -13,13 +13,27 @@ require('keys')      -- Keymaps
 require('plugins')      -- Plugins
 
 -- PLUGINS
-require('nvim-tree').setup{}
+require('impatient')
+require('nvim-tree').setup{
+  actions = {
+    change_dir = {
+      enable = false,
+    }
+  }
+}
 require('lualine').setup {
     options = {
         theme = 'dracula-nvim'
     }
 }
 require('telescope').setup {
+    pickers = {
+      live_grep = {
+        additional_args = function(opts)
+          return {"--hidden"}
+        end
+      },
+    },
     extensions = {
         fzy_native = {
             override_generic_sorter = false,
@@ -32,7 +46,7 @@ require('gitlinker').setup()
 
 -- TODO: Move these --
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 local luasnip = require('luasnip')
 local cmp = require('cmp')
@@ -119,3 +133,11 @@ require('lspconfig')['tsserver'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
 }
+require('gitsigns').setup()
+require('indent_blankline').setup({
+  show_current_context = true,
+  show_current_context_start = true
+})
+require('trouble').setup()
+require('leap').add_default_mappings()
+require("symbols-outline").setup()

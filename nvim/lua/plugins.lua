@@ -18,6 +18,7 @@ return require('packer').startup(function(use)
     use 'nvim-telescope/telescope-fzy-native.nvim'
 
     -- [[ nice to have ]]
+    use 'lewis6991/impatient.nvim'
     use 'mhinz/vim-startify'
     use 'danilamihailov/beacon.nvim'
 
@@ -36,4 +37,11 @@ return require('packer').startup(function(use)
         'ruifm/gitlinker.nvim',
         requires = 'nvim-lua/plenary.nvim',
     }
+    use 'lewis6991/gitsigns.nvim'
+    use 'lukas-reineke/indent-blankline.nvim'
+    use 'folke/trouble.nvim'
+    use 'tpope/vim-repeat'
+    use 'ggandor/leap.nvim'
+    use 'wakatime/vim-wakatime'
+    use 'simrat39/symbols-outline.nvim'
 end)

@@ -9,10 +9,21 @@ map('i', 'jk', '<ESC>', {})
 map('n', '<LEADER>n', [[:NvimTreeToggle<cr>]], {})
 
 -- Telescope
-map('n', '<LEADER>ff', [[:Telescope find_files<cr>]], {})
-map('n', '<LEADER>fg', [[:Telescope live_grep<cr>]], {})
-map('n', '<LEADER>fb', [[:Telescope buffers<cr>]], {})
-map('n', '<LEADER>fh', [[:Telescope help_tags<cr>]], {})
+map('n', 'ff', [[:Telescope find_files<cr>]], {})
+map('n', 'fg', [[:Telescope live_grep<cr>]], {})
+map('n', 'fb', [[:Telescope buffers<cr>]], {})
+map('n', 'fh', [[:Telescope help_tags<cr>]], {})
+map('n', 'fm', [[:Telescope marks<cr>]], {})
+map('n', 'ft', [[:Telescope treesitter<cr>]], {})
+map('n', 'fa', [[:Telescope git_files<cr>]], {})
+map('n', 'fr', [[:Telescope lsp_references<cr>]], {})
+map('n', 'fd', [[:Telescope lsp_definitions<cr>]], {})
+map('n', 'fs', [[:Telescope lsp_document_symbols<cr>]], {})
+map('n', 'fh', [[:Telescope oldfiles<cr>]], {})
+map('n', 'fc', [[:Telescope git_status theme=dropdown<cr>]], {})
+
+-- Outline
+map('n', 'fS', [[:SymbolsOutline<cr>]], {})
 
 -- " Using Lua functions
 -- nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
