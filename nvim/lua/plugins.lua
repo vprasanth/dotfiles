@@ -2,6 +2,7 @@
 
 return require('packer').startup(function(use)
     -- [[ context ]]
+    use 'wbthomason/packer.nvim'
     use {
         'kyazdani42/nvim-tree.lua',
         requires = 'kyazdani42/nvim-web-devicons'
@@ -44,4 +45,5 @@ return require('packer').startup(function(use)
     use 'ggandor/leap.nvim'
     use 'wakatime/vim-wakatime'
     use 'simrat39/symbols-outline.nvim'
+    use { "catppuccin/nvim", as = "catppuccin" }
 end)
