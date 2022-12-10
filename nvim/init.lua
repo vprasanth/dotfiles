@@ -141,3 +141,5 @@ require('indent_blankline').setup({
 require('trouble').setup()
 require('leap').add_default_mappings()
 require("symbols-outline").setup()
+require('gitblame')
+require('neoscroll').setup()

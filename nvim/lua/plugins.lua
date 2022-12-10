@@ -46,4 +46,6 @@ return require('packer').startup(function(use)
     use 'wakatime/vim-wakatime'
     use 'simrat39/symbols-outline.nvim'
     use { "catppuccin/nvim", as = "catppuccin" }
+    use 'f-person/git-blame.nvim'
+    use 'karb94/neoscroll.nvim'
 end)

@@ -35,4 +35,5 @@ opt.splitbelow = true            -- bool: Place new window below the current one
 
 -- [[ Plugin Options ]]
 vim.cmd[[let g:neoformat_try_node_exe = 1]]
+vim.cmd[[let g:gitblame_enabled = 0]]
 vim.cmd[[set mouse=]]
