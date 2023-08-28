@@ -26,6 +26,9 @@ return require('packer').startup(function(use)
     -- [[ themes ]]
     use 'Mofiqul/dracula.nvim'
     use "EdenEast/nightfox.nvim"
+    use "ellisonleao/gruvbox.nvim"
+    use "rebelot/kanagawa.nvim"
+    use { "catppuccin/nvim", as = "catppuccin" }
 
     -- [[ coding ]]
     use 'sbdchd/neoformat'
@@ -45,7 +48,6 @@ return require('packer').startup(function(use)
     use 'ggandor/leap.nvim'
     use 'wakatime/vim-wakatime'
     use 'simrat39/symbols-outline.nvim'
-    use { "catppuccin/nvim", as = "catppuccin" }
     use 'f-person/git-blame.nvim'
     use 'karb94/neoscroll.nvim'
 end)

@@ -15,6 +15,10 @@ require('plugins')      -- Plugins
 -- PLUGINS
 require('impatient')
 require('nvim-tree').setup{
+  disable_netrw = true,
+  hijack_netrw = true,
+  respect_buf_cwd = true,
+  sync_root_with_cwd = true,
   actions = {
     change_dir = {
       enable = false,
@@ -28,6 +32,9 @@ require('lualine').setup {
 }
 require('telescope').setup {
     pickers = {
+      find_files = {
+        theme = "ivy",
+      },
       live_grep = {
         additional_args = function(opts)
           return {"--hidden"}
@@ -129,12 +136,19 @@ local lsp_flags = {
   debounce_text_changes = 150,
 }
 
+require('lspconfig')['vuels'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
 require('lspconfig')['tsserver'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
 }
 require('lspconfig')['pyright'].setup{}
+require('lspconfig')['prismals'].setup{}
 require('gitsigns').setup()
+
+
 require('indent_blankline').setup({
   show_current_context = true,
   show_current_context_start = true
