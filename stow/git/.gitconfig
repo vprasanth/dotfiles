@@ -2,3 +2,6 @@
 name=Prasanth Vaaheeswaran
 email=prasanth.vaaheeswaran@okta.com
 
+[core]
+editor = nvim
+
