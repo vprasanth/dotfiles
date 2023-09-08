@@ -1,5 +1,19 @@
 --[[ init.lua ]]
 
+-- Bootstrap lazy package manager
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
 -- LEADER
 -- These keybindings need to be defined before the first /
 -- is called; otherwise, it will default to "\"
@@ -7,10 +21,10 @@ vim.g.mapleader = ","
 vim.g.localleader = "\\"
 
 -- IMPORTS
+require("lazy").setup(require('plugins'))
 require('vars')      -- Variables
 require('opts')      -- Options
 require('keys')      -- Keymaps
-require('plugins')      -- Plugins
 
 -- PLUGINS
 require('impatient')
