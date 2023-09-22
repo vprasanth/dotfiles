@@ -125,11 +125,6 @@ export GIT_SSL_CAPATH="/Library/Application Support/Netskope/STAgent/download/ns
 export REQUESTS_CA_BUNDLE="/Library/Application Support/Netskope/STAgent/download/nscacert_combined.pem"
 export NODE_EXTRA_CA_CERTS="/Library/Application Support/Netskope/STAgent/download/nscacert_combined.pem"
 
-function togglelight() {
-  EVENT_NAME='stream_light'
-  curl -s https://maker.ifttt.com/trigger/$EVENT_NAME/json/with/key/MaADmgWxc-ly3nCubo9lh &> /dev/null
-}
-
 export KUBECONFIG="${KUBECONFIG}:${HOME}/.kube/config"
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
