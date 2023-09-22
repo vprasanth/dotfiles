@@ -1,5 +1,5 @@
 spell/
 plugin/
 plugins/
-.DS_Store
-.bak
+**.DS_Store
+**.bak
