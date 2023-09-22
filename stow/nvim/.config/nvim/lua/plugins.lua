@@ -50,4 +50,5 @@ return {
     'simrat39/symbols-outline.nvim',
     { 'f-person/git-blame.nvim', lazy = true},
     'karb94/neoscroll.nvim',
+    'voldikss/vim-floaterm'
 }
