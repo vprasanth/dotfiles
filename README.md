@@ -14,3 +14,10 @@ setxkbmap -option ctrl:nocaps
 
 ## remap on arch
 https://wiki.archlinux.org/index.php/xmodmap#Turn_CapsLock_into_Control
+
+## stow usage
+
+```
+# link kitty configs to home
+stow kitty -t ~
+```
