@@ -30,7 +30,8 @@ return {
 	{ "catppuccin/nvim", name = "catppuccin" },
 
 	-- [[ coding ]]
-	{ "sbdchd/neoformat", lazy = false },
+	-- { "sbdchd/neoformat", lazy = false },
+	{ "mhartington/formatter.nvim", lazy = false },
 	"neovim/nvim-lspconfig",
 	"hrsh7th/nvim-cmp", -- Autocompletion plugin
 	"hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
