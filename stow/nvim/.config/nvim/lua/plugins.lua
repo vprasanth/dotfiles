@@ -2,7 +2,6 @@
 
 return {
     -- [[ context ]]
-    'wbthomason/packer.nvim',
     {
         'kyazdani42/nvim-tree.lua',
         dependencies = 'kyazdani42/nvim-web-devicons'
@@ -19,19 +18,18 @@ return {
     'nvim-telescope/telescope-fzy-native.nvim',
 
     -- [[ nice to have ]]
-    'lewis6991/impatient.nvim',
-    'mhinz/vim-startify',
+    { 'mhinz/vim-startify', lazy = false },
     'danilamihailov/beacon.nvim',
 
     -- [[ themes ]]
-    'Mofiqul/dracula.nvim',
+    { 'Mofiqul/dracula.nvim', lazy = false },
     "EdenEast/nightfox.nvim",
     "ellisonleao/gruvbox.nvim",
     "rebelot/kanagawa.nvim",
     { "catppuccin/nvim", name = "catppuccin" },
 
     -- [[ coding ]]
-    'sbdchd/neoformat',
+    { 'sbdchd/neoformat', lazy = false },
     'neovim/nvim-lspconfig',
     'hrsh7th/nvim-cmp', -- Autocompletion plugin
     'hrsh7th/cmp-nvim-lsp', -- LSP source for nvim-cmp
@@ -42,13 +40,13 @@ return {
         dependencies = 'nvim-lua/plenary.nvim',
     },
     'lewis6991/gitsigns.nvim',
-    'lukas-reineke/indent-blankline.nvim',
+    { 'lukas-reineke/indent-blankline.nvim', main = 'ibl', opts = {} },
     'folke/trouble.nvim',
     'tpope/vim-repeat',
     'ggandor/leap.nvim',
-    'wakatime/vim-wakatime',
+    { 'wakatime/vim-wakatime', lazy = false },
     'simrat39/symbols-outline.nvim',
-    { 'f-person/git-blame.nvim', lazy = true},
+    { 'f-person/git-blame.nvim', lazy = true },
     'karb94/neoscroll.nvim',
     'voldikss/vim-floaterm'
 }

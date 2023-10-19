@@ -21,13 +21,16 @@ vim.g.mapleader = ","
 vim.g.localleader = "\\"
 
 -- IMPORTS
-require("lazy").setup(require('plugins'))
+require("lazy").setup(require('plugins'), { 
+  defaults = {
+    lazy = true
+  }
+})
 require('vars')      -- Variables
 require('opts')      -- Options
 require('keys')      -- Keymaps
 
 -- PLUGINS
-require('impatient')
 require('nvim-tree').setup{
   disable_netrw = true,
   hijack_netrw = true,
@@ -163,10 +166,11 @@ require('lspconfig')['prismals'].setup{}
 require('gitsigns').setup()
 
 
-require('indent_blankline').setup({
-  show_current_context = true,
-  show_current_context_start = true
-})
+-- require('indent_blankline').setup({
+--   show_current_context = true,
+--   show_current_context_start = true
+-- })
+require('ibl').setup()
 require('trouble').setup()
 require('leap').add_default_mappings()
 require("symbols-outline").setup()
