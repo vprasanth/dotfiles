@@ -30,7 +30,6 @@ return {
 	{ "catppuccin/nvim", name = "catppuccin" },
 
 	-- [[ coding ]]
-	-- { "sbdchd/neoformat", lazy = false },
 	{ "mhartington/formatter.nvim", lazy = false },
 	"neovim/nvim-lspconfig",
 	"hrsh7th/nvim-cmp", -- Autocompletion plugin
@@ -51,4 +50,5 @@ return {
 	{ "f-person/git-blame.nvim", lazy = true },
 	"karb94/neoscroll.nvim",
 	"voldikss/vim-floaterm",
+	{ "sindrets/diffview.nvim", lazy = false },
 }
