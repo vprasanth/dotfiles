@@ -23,6 +23,8 @@ map("n", "fs", [[:Telescope lsp_document_symbols<cr>]], {})
 map("n", "fh", [[:Telescope oldfiles<cr>]], {})
 map("n", "fc", [[:Telescope git_status theme=dropdown<cr>]], {})
 
+map("n", "<LEADER>f", [[:Format<cr>]], {})
+
 -- Outline
 map("n", "fS", [[:SymbolsOutline<cr>]], {})
 
