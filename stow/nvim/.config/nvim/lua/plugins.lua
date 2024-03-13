@@ -29,9 +29,15 @@ return {
 	"rebelot/kanagawa.nvim",
 	{ "catppuccin/nvim", name = "catppuccin" },
 
+	-- [[ package manager ]]
+	{
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+		"neovim/nvim-lspconfig",
+	},
+
 	-- [[ coding ]]
 	{ "mhartington/formatter.nvim", lazy = false },
-	"neovim/nvim-lspconfig",
 	"hrsh7th/nvim-cmp", -- Autocompletion plugin
 	"hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
 	"saadparwaiz1/cmp_luasnip", -- Snippets source for nvim-cmp
