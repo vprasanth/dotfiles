@@ -119,6 +119,11 @@ require("nvim-tree").setup({
 			enable = false,
 		},
 	},
+  view = {
+    float = {
+      enable = false
+    },
+  },
 })
 require("lualine").setup({
 	options = {
@@ -160,6 +165,8 @@ cmp.setup({
 		end,
 	},
 	mapping = cmp.mapping.preset.insert({
+    ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
+    ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
 		["<C-d>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),

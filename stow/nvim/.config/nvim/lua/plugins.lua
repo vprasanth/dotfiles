@@ -2,6 +2,16 @@
 
 return {
 	-- [[ context ]]
+	-- Lua
+	{
+		"folke/zen-mode.nvim",
+    lazy = false,
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
+	},
 	{
 		"kyazdani42/nvim-tree.lua",
 		dependencies = "kyazdani42/nvim-web-devicons",
@@ -50,6 +60,7 @@ return {
 	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 	"folke/trouble.nvim",
 	"tpope/vim-repeat",
+	{ "tpope/vim-surround", lazy = false },
 	"ggandor/leap.nvim",
 	{ "wakatime/vim-wakatime", lazy = false },
 	"simrat39/symbols-outline.nvim",
