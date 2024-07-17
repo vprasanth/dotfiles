@@ -5,7 +5,7 @@
 ```
 # link kitty configs to home
 stow kitty -t ~
-`
+```
 
 ## map caps-lock to control on ubuntu
 
