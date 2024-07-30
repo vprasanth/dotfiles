@@ -34,9 +34,9 @@ return {
 
 	-- [[ themes ]]
 	{ "Mofiqul/dracula.nvim", lazy = false },
-	"EdenEast/nightfox.nvim",
-	"ellisonleao/gruvbox.nvim",
-	"rebelot/kanagawa.nvim",
+  { "EdenEast/nightfox.nvim", lazy = false },
+  { "ellisonleao/gruvbox.nvim", lazy = false },
+  { "rebelot/kanagawa.nvim", lazy = false },
 	{ "catppuccin/nvim", name = "catppuccin" },
 
 	-- [[ package manager ]]

@@ -1,7 +1,0 @@
-env:
-  TERM: xterm-256color
-font:
-  normal:
-    family: "Agave Nerd Font"
-  size: 14.0
-

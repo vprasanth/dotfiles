@@ -62,7 +62,7 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
 	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
 	vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-	vim.keymap.set("n", "<space>f", vim.lsp.buf.formatting, bufopts)
+	vim.keymap.set("n", "<space>f", vim.lsp.buf.format, bufopts)
 end
 
 local handlers = {
@@ -90,10 +90,13 @@ local handlers = {
 	["prismals"] = function()
 		require("lspconfig")["prismals"].setup({ on_attach = on_attach, flags = lsp_flags })
 	end,
+	["ruff"] = function()
+		require("lspconfig")["ruff_lsp"].setup({ on_attach = on_attach, flags = lsp_flags })
+	end,
 }
 
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "rust_analyzer", "tsserver", "vuels", "pyright", "prismals" },
+	ensure_installed = { "lua_ls", "rust_analyzer", "tsserver", "vuels", "pyright", "prismals", "ruff" },
 	handlers = handlers,
 })
 
