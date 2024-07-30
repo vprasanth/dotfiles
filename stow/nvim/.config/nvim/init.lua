@@ -34,6 +34,7 @@ require("keys") -- Keymaps
 -- setup mason
 require("mason").setup()
 require("mason-lspconfig").setup()
+require('Comment').setup()
 
 local lsp_flags = {
 	-- This is the default in Nvim 0.7+
