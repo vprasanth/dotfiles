@@ -79,28 +79,29 @@ local handlers = {
 	-- ["vuels"] = function()
 	-- 	require("lspconfig")["vuels"].setup({ on_attach = on_attach, flags = lsp_flags })
 	-- end,
-	["volar"] = function()
-		require("lspconfig")["volar"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
-	["rust_analyzer"] = function()
-		require("lspconfig")["rust_analyzer"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
+	-- ["volar"] = function()
+	-- 	require("lspconfig")["volar"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
+	-- ["rust_analyzer"] = function()
+	-- 	require("lspconfig")["rust_analyzer"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
 	-- ["pyright"] = function()
 	-- 	require("lspconfig")["pyright"].setup({ on_attach = on_attach, flags = lsp_flags })
 	-- end,
 	-- ["prismals"] = function()
 	-- 	require("lspconfig")["prismals"].setup({ on_attach = on_attach, flags = lsp_flags })
 	-- end,
-	["ruff"] = function()
-		require("lspconfig")["ruff_lsp"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
+	-- ["ruff"] = function()
+	-- 	require("lspconfig")["ruff_lsp"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
 	["rubocop"] = function()
 		require("lspconfig")["rubocop"].setup({ on_attach = on_attach, flags = lsp_flags })
 	end,
 }
 
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "rust_analyzer", "ruff" },
+	ensure_installed = { "lua_ls" },
+	-- ensure_installed = { "lua_ls", "rust_analyzer", "ruff" },
 	handlers = handlers,
 })
 
