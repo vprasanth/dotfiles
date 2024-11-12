@@ -70,48 +70,47 @@ local handlers = {
 	function(server_name)
 		require("lspconfig")[server_name].setup({})
 	end,
-	["tsserver"] = function()
-		require("lspconfig")["tsserver"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
+	-- ["tsserver"] = function()
+	-- 	require("lspconfig")["tsserver"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
 	["lua_ls"] = function()
 		require("lspconfig")["lua_ls"].setup({ on_attach = on_attach, flags = lsp_flags })
 	end,
-	["vuels"] = function()
-		require("lspconfig")["vuels"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
+	-- ["vuels"] = function()
+	-- 	require("lspconfig")["vuels"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
 	["volar"] = function()
 		require("lspconfig")["volar"].setup({ on_attach = on_attach, flags = lsp_flags })
 	end,
 	["rust_analyzer"] = function()
 		require("lspconfig")["rust_analyzer"].setup({ on_attach = on_attach, flags = lsp_flags })
 	end,
-	["pyright"] = function()
-		require("lspconfig")["pyright"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
-	["prismals"] = function()
-		require("lspconfig")["prismals"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
+	-- ["pyright"] = function()
+	-- 	require("lspconfig")["pyright"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
+	-- ["prismals"] = function()
+	-- 	require("lspconfig")["prismals"].setup({ on_attach = on_attach, flags = lsp_flags })
+	-- end,
 	["ruff"] = function()
 		require("lspconfig")["ruff_lsp"].setup({ on_attach = on_attach, flags = lsp_flags })
+	end,
+	["rubocop"] = function()
+		require("lspconfig")["rubocop"].setup({ on_attach = on_attach, flags = lsp_flags })
 	end,
 }
 
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "rust_analyzer", "tsserver", "vuels", "pyright", "prismals", "ruff" },
+	ensure_installed = { "lua_ls", "rust_analyzer", "ruff" },
 	handlers = handlers,
 })
 
 local nvim_lsp = require('lspconfig')
-nvim_lsp.denols.setup {
-  on_attach = on_attach,
-  root_dir = nvim_lsp.util.root_pattern("deno.json", "deno.jsonc"),
-}
 
-nvim_lsp.tsserver.setup {
-  on_attach = on_attach,
-  root_dir = nvim_lsp.util.root_pattern("package.json"),
-  single_file_support = false
-}
+-- nvim_lsp.tsserver.setup {
+--   on_attach = on_attach,
+--   root_dir = nvim_lsp.util.root_pattern("package.json"),
+--   single_file_support = false
+-- }
 
 require("nvim-tree").setup({
 	disable_netrw = true,
