@@ -135,6 +135,15 @@ require("lualine").setup({
 	},
 })
 require("telescope").setup({
+  defaults = {
+    path_display = { "truncate" },
+    scroll_strategy = "limit",
+    winblend = 0,
+    preview = {
+      treesitter = true,
+    },
+  },
+  file_ignore_patterns = {"sorbet, .git, .vscode"},
 	pickers = {
 		find_files = {
 			theme = "ivy",
