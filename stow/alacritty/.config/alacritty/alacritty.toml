@@ -2,7 +2,9 @@
 TERM = "xterm-256color"
 
 [font]
-size = 16.0
+size = 14.0
 
 [font.normal]
-family = "Agave Nerd Font"
+# family = "Agave Nerd Font"
+family = "MesloLGS NF"
+

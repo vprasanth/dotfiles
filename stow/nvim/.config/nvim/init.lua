@@ -34,7 +34,7 @@ require("keys") -- Keymaps
 -- setup mason
 require("mason").setup()
 require("mason-lspconfig").setup()
-require('Comment').setup()
+require("Comment").setup()
 
 local lsp_flags = {
 	-- This is the default in Nvim 0.7+
@@ -105,7 +105,7 @@ require("mason-lspconfig").setup({
 	handlers = handlers,
 })
 
-local nvim_lsp = require('lspconfig')
+local nvim_lsp = require("lspconfig")
 
 -- nvim_lsp.tsserver.setup {
 --   on_attach = on_attach,
@@ -123,27 +123,31 @@ require("nvim-tree").setup({
 			enable = false,
 		},
 	},
-  view = {
-    float = {
-      enable = false
-    },
-  },
+	view = {
+		float = {
+			enable = false,
+		},
+	},
 })
 require("lualine").setup({
 	options = {
 		theme = "dracula-nvim",
 	},
 })
+local lga_actions = require("telescope-live-grep-args.actions")
 require("telescope").setup({
-  defaults = {
-    path_display = { "truncate" },
-    scroll_strategy = "limit",
-    winblend = 0,
-    preview = {
-      treesitter = true,
-    },
-  },
-  file_ignore_patterns = {"sorbet, .git, .vscode"},
+	defaults = {
+		-- path_display = { "smart" },
+		scroll_strategy = "limit",
+		winblend = 0,
+		preview = {
+			treesitter = true,
+		},
+		layout_config = {
+			vertical = { width = "0.5" },
+		},
+	},
+	file_ignore_patterns = { "sorbet, .git, .vscode" },
 	pickers = {
 		find_files = {
 			theme = "ivy",
@@ -153,15 +157,31 @@ require("telescope").setup({
 				return { "--hidden" }
 			end,
 		},
+		lsp_references = {
+			theme = "dropdown",
+		},
 	},
 	extensions = {
 		fzy_native = {
 			override_generic_sorter = false,
 			override_file_sorter = true,
 		},
+		live_grep_args = {
+			auto_quoting = true, -- enable/disable auto-quoting
+			-- define mappings, e.g.
+			mappings = { -- extend mappings
+				i = {
+					["<C-k>"] = lga_actions.quote_prompt(),
+					["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+					-- freeze the current list and start a fuzzy search in the frozen list
+					["<C-space>"] = lga_actions.to_fuzzy_refine,
+				},
+			},
+		},
 	},
 })
 require("telescope").load_extension("fzy_native")
+require("telescope").load_extension("live_grep_args")
 require("gitlinker").setup()
 
 -- TODO: Move these --
@@ -178,8 +198,8 @@ cmp.setup({
 		end,
 	},
 	mapping = cmp.mapping.preset.insert({
-    ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
-    ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
+		["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+		["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
 		["<C-d>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),
