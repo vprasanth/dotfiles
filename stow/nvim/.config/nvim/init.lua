@@ -31,15 +31,8 @@ require("opts") -- Options
 require("keys") -- Keymaps
 
 -- PLUGINS
--- setup mason
-require("mason").setup()
-require("mason-lspconfig").setup()
 require("Comment").setup()
 
-local lsp_flags = {
-	-- This is the default in Nvim 0.7+
-	debounce_text_changes = 150,
-}
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
@@ -66,52 +59,27 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<space>f", vim.lsp.buf.format, bufopts)
 end
 
-local handlers = {
-	function(server_name)
-		require("lspconfig")[server_name].setup({})
-	end,
-	-- ["tsserver"] = function()
-	-- 	require("lspconfig")["tsserver"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	["lua_ls"] = function()
-		require("lspconfig")["lua_ls"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
-	-- ["vuels"] = function()
-	-- 	require("lspconfig")["vuels"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	-- ["volar"] = function()
-	-- 	require("lspconfig")["volar"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	-- ["rust_analyzer"] = function()
-	-- 	require("lspconfig")["rust_analyzer"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	-- ["pyright"] = function()
-	-- 	require("lspconfig")["pyright"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	-- ["prismals"] = function()
-	-- 	require("lspconfig")["prismals"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	-- ["ruff"] = function()
-	-- 	require("lspconfig")["ruff_lsp"].setup({ on_attach = on_attach, flags = lsp_flags })
-	-- end,
-	["rubocop"] = function()
-		require("lspconfig")["rubocop"].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
+local lsp_flags = {
+	-- This is the default in Nvim 0.7+
+	debounce_text_changes = 150,
 }
 
+-- setup mason
+require("mason").setup()
+
+-- @todo enable automatic installation if deps are installed
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls" },
-	-- ensure_installed = { "lua_ls", "rust_analyzer", "ruff" },
-	handlers = handlers,
+	ensure_installed = { "lua_ls", "ts_ls", "ruff", "rubocop", "solargraph", "sorbet" },
+	automatic_installation = false,
+})
+
+require("mason-lspconfig").setup_handlers({
+	function(server_name)
+		require("lspconfig")[server_name].setup({ on_attach = on_attach, flags = lsp_flags })
+	end,
 })
 
 local nvim_lsp = require("lspconfig")
-
--- nvim_lsp.tsserver.setup {
---   on_attach = on_attach,
---   root_dir = nvim_lsp.util.root_pattern("package.json"),
---   single_file_support = false
--- }
 
 require("nvim-tree").setup({
 	disable_netrw = true,

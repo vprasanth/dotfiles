@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# not up to date for mason!
 brew install stow
 brew install --cask alacritty
 brew install neovim
