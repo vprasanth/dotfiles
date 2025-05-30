@@ -1,6 +1,56 @@
 --[[ init.lua ]]
+-- Neovim initialization file
+-- This is the main entry point for Neovim configuration.
+-- It bootstraps the plugin manager and loads all other configuration files.
 
+-- [[ Performance Optimizations ]]
+-- Disable unused built-in plugins
+local disabled_built_ins = {
+	"netrw",
+	"netrwPlugin",
+	"netrwSettings",
+	"netrwFileHandlers",
+	"gzip",
+	"zip",
+	"zipPlugin",
+	"tar",
+	"tarPlugin",
+	"getscript",
+	"getscriptPlugin",
+	"vimball",
+	"vimballPlugin",
+	"2html_plugin",
+	"logipat",
+	"rrhelper",
+	"spellfile_plugin",
+	"matchit",
+}
+
+for _, plugin in pairs(disabled_built_ins) do
+	vim.g["loaded_" .. plugin] = 1
+end
+
+-- Optimize startup time
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+
+-- Reduce update time for better performance
+vim.opt.updatetime = 100
+vim.opt.timeoutlen = 500
+
+-- Optimize for large files
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undofile = true
+vim.opt.undolevels = 10000
+vim.opt.undoreload = 10000
+
+-- [[ Bootstrap ]]
 -- Bootstrap lazy package manager
+-- This section ensures that lazy.nvim is installed and available.
+-- If it's not installed, it will be cloned from the official repository.
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -8,282 +58,104 @@ if not vim.loop.fs_stat(lazypath) then
 		"clone",
 		"--filter=blob:none",
 		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
+		"--branch=stable",
 		lazypath,
 	})
 end
 vim.opt.rtp:prepend(lazypath)
 
--- LEADER
--- These keybindings need to be defined before the first /
--- is called; otherwise, it will default to "\"
-vim.g.mapleader = ","
-vim.g.localleader = "\\"
+-- [[ Leader Keys ]]
+-- Set global leader keys for key mappings
+-- These keys are used as prefixes for custom key mappings throughout the config
+vim.g.mapleader = "," -- Main leader key
+vim.g.localleader = "\\" -- Local leader key for filetype-specific mappings
 
--- IMPORTS
+-- [[ Core Configuration ]]
+-- Initialize lazy.nvim with our plugin specifications
+-- This loads all plugins defined in plugins.lua
 require("lazy").setup(require("plugins"), {
-	defaults = {
-		lazy = true,
+	defaults = { lazy = true }, -- Lazy load plugins by default
+	install = { colorscheme = { "kanagawa-wave" } }, -- Default colorscheme
+	checker = { enabled = true }, -- Check for plugin updates
+	change_detection = { notify = false }, -- Don't notify on config changes
+	performance = {
+		rtp = {
+			disabled_plugins = disabled_built_ins,
+		},
+	},
+	rocks = {
+		enabled = false, -- Disable LuaRocks support
 	},
 })
-require("vars") -- Variables
-require("opts") -- Options
-require("keys") -- Keymaps
 
--- PLUGINS
-require("Comment").setup()
+-- [[ Core Modules ]]
+-- Load essential configuration modules
+require("vars") -- Global variables and settings
+require("opts") -- Editor options and settings
+require("keys") -- Key mappings
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-	-- Enable completion triggered by <c-x><c-o>
-	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-	-- Mappings.
-	-- See `:help vim.lsp.*` for documentation on any of the below functions
-	local bufopts = { noremap = true, silent = true, buffer = bufnr }
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-	vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-	vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-	vim.keymap.set("n", "<space>wl", function()
-		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-	end, bufopts)
-	vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
-	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-	vim.keymap.set("n", "<space>f", vim.lsp.buf.format, bufopts)
-end
-
-local lsp_flags = {
-	-- This is the default in Nvim 0.7+
-	debounce_text_changes = 150,
+-- [[ Plugin Configurations ]]
+-- Load and setup plugin configurations from the config directory
+-- Each plugin's configuration is in its own file under lua/config/
+local configs = {
+	"lsp", -- Language Server Protocol configuration
+	"cmp", -- Completion configuration
+	"telescope", -- Fuzzy finder configuration
+	"diagnostics", -- Diagnostic display and navigation
 }
 
--- setup mason
-require("mason").setup()
+-- Dynamically load and setup each plugin configuration
+for _, config in ipairs(configs) do
+	local ok, module = pcall(require, "config." .. config)
+	if ok then
+		if module.setup then
+			module.setup()
+		end
+	end
+end
 
--- @todo enable automatic installation if deps are installed
-require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "ts_ls", "ruff", "rubocop", "solargraph", "sorbet" },
-	automatic_installation = false,
-})
+-- [[ Additional Plugin Setup ]]
+-- Direct plugin configurations that don't need their own files
+-- These are simpler configurations that can be defined inline
 
-require("mason-lspconfig").setup_handlers({
-	function(server_name)
-		require("lspconfig")[server_name].setup({ on_attach = on_attach, flags = lsp_flags })
-	end,
-})
-
-local nvim_lsp = require("lspconfig")
-
+-- NvimTree: File explorer configuration
 require("nvim-tree").setup({
-	disable_netrw = true,
-	hijack_netrw = true,
-	respect_buf_cwd = true,
-	sync_root_with_cwd = true,
+	disable_netrw = true, -- Disable netrw (built-in file explorer)
+	hijack_netrw = true, -- Take over netrw's functionality
+	respect_buf_cwd = true, -- Respect buffer's current working directory
+	sync_root_with_cwd = true, -- Keep root directory in sync with cwd
 	actions = {
 		change_dir = {
-			enable = false,
+			enable = false, -- Disable automatic directory changing
 		},
 	},
 	view = {
 		float = {
-			enable = false,
+			enable = false, -- Disable floating window
 		},
 	},
 })
+
+-- Lualine: Status line configuration
 require("lualine").setup({
 	options = {
-		theme = "dracula-nvim",
+		theme = "dracula-nvim", -- Use dracula theme for status line
 	},
 })
-local lga_actions = require("telescope-live-grep-args.actions")
-require("telescope").setup({
-	defaults = {
-		-- path_display = { "smart" },
-		scroll_strategy = "limit",
-		winblend = 0,
-		preview = {
-			treesitter = true,
-		},
-		layout_config = {
-			vertical = { width = "0.5" },
-		},
-	},
-	file_ignore_patterns = { "sorbet, .git, .vscode" },
-	pickers = {
-		find_files = {
-			theme = "ivy",
-		},
-		live_grep = {
-			additional_args = function(opts)
-				return { "--hidden" }
-			end,
-		},
-		lsp_references = {
-			theme = "dropdown",
-		},
-	},
-	extensions = {
-		fzy_native = {
-			override_generic_sorter = false,
-			override_file_sorter = true,
-		},
-		live_grep_args = {
-			auto_quoting = true, -- enable/disable auto-quoting
-			-- define mappings, e.g.
-			mappings = { -- extend mappings
-				i = {
-					["<C-k>"] = lga_actions.quote_prompt(),
-					["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
-					-- freeze the current list and start a fuzzy search in the frozen list
-					["<C-space>"] = lga_actions.to_fuzzy_refine,
-				},
-			},
-		},
-	},
-})
-require("telescope").load_extension("fzy_native")
-require("telescope").load_extension("live_grep_args")
-require("gitlinker").setup()
 
--- TODO: Move these --
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
-local luasnip = require("luasnip")
-local cmp = require("cmp")
-
-cmp.setup({
-	snippet = {
-		expand = function(args)
-			luasnip.lsp_expand(args.body)
+-- Gitlinker: Git URL handling
+require("gitlinker").setup({
+	callbacks = {
+		["repos%.fullscript%.io"] = function(url_data)
+			url_data.host = "git.fullscript.io"
+			return require("gitlinker.hosts").get_gitlab_type_url(url_data)
 		end,
 	},
-	mapping = cmp.mapping.preset.insert({
-		["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
-		["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
-		["<C-d>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<C-Space>"] = cmp.mapping.complete(),
-		["<CR>"] = cmp.mapping.confirm({
-			behavior = cmp.ConfirmBehavior.Replace,
-			select = true,
-		}),
-		["<Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			elseif luasnip.expand_or_jumpable() then
-				luasnip.expand_or_jump()
-			else
-				fallback()
-			end
-		end, { "i", "s" }),
-		["<S-Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			elseif luasnip.jumpable(-1) then
-				luasnip.jump(-1)
-			else
-				fallback()
-			end
-		end, { "i", "s" }),
-	}),
-	sources = {
-		{ name = "nvim_lsp" },
-		{ name = "luasnip" },
-	},
 })
 
--- Mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
-
-require("gitsigns").setup()
-
--- require('indent_blankline').setup({
---   show_current_context = true,
---   show_current_context_start = true
--- })
-require("ibl").setup()
-require("trouble").setup()
-require("leap").add_default_mappings()
-require("symbols-outline").setup()
-require("gitblame")
-require("neoscroll").setup()
-local util = require("formatter.util")
-local prettierConfig = function()
-	return {
-		exe = "prettier",
-		args = { "--stdin-filepath", vim.fn.shellescape(vim.api.nvim_buf_get_name(0)) },
-		stdin = true,
-	}
-end
-require("formatter").setup({
-	-- Enable or disable logging
-	logging = true,
-	-- Set the log level
-	log_level = vim.log.levels.WARN,
-	-- All formatter configurations are opt-in
-	filetype = {
-		-- Formatter configurations for filetype "lua" go here
-		-- and will be executed in order
-		json = { prettierConfig },
-		html = { prettierConfig },
-		javascript = { prettierConfig },
-		typescript = { prettierConfig },
-		typescriptreact = { prettierConfig },
-		go = {
-			function()
-				return {
-					exe = "gofmt",
-					stdin = true,
-				}
-			end,
-		},
-		lua = {
-			-- "formatter.filetypes.lua" defines default configurations for the
-			-- "lua" filetype
-			require("formatter.filetypes.lua").stylua,
-
-			-- You can also define your own configuration
-			function()
-				-- Supports conditional formatting
-				if util.get_current_buffer_file_name() == "special.lua" then
-					return nil
-				end
-
-				-- Full specification of configurations is down below and in Vim help
-				-- files
-				return {
-					exe = "stylua",
-					args = {
-						"--search-parent-directories",
-						"--stdin-filepath",
-						util.escape_path(util.get_current_buffer_file_path()),
-						"--",
-						"-",
-					},
-					stdin = true,
-				}
-			end,
-		},
-
-		-- Use the special "*" filetype for defining formatter configurations on
-		-- any filetype
-		["*"] = {
-			-- "formatter.filetypes.any" defines default configurations for any
-			-- filetype
-			require("formatter.filetypes.any").remove_trailing_whitespace,
-		},
-	},
-})
+-- Additional plugin configurations
+require("gitsigns").setup() -- Git signs in the gutter
+require("ibl").setup() -- Indent blankline
+require("trouble").setup() -- Quickfix and location list
+require("leap").add_default_mappings() -- Enhanced motion
+require("neoscroll").setup() -- Smooth scrolling

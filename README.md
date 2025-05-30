@@ -7,7 +7,7 @@
 stow kitty -t ~
 ```
 
-## map caps-lock to control on ubuntu
+# map caps-lock to control on ubuntu
 
 ```
 sudo vim /etc/default/keyboard

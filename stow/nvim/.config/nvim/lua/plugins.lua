@@ -1,108 +1,268 @@
--- [[ plugins ]]
-
+-- [[ plugins.lua ]]
 return {
-	-- [[ context ]]
-	-- Lua
+	-- [[ Core dependencies ]]
+	{ "nvim-lua/plenary.nvim", lazy = true },
+	{ "kyazdani42/nvim-web-devicons", lazy = true },
+
+	-- [[ UI and Theme ]]
 	{
 		"folke/zen-mode.nvim",
-		lazy = false,
+		cmd = "ZenMode",
 		opts = {
-			-- your configuration comes here
-			-- or leave it empty to use the default settings
-			-- refer to the configuration section below
+			window = {
+				backdrop = 0.95,
+				width = 120,
+				height = 1,
+			},
+			plugins = {
+				options = {
+					enabled = true,
+					ruler = false,
+					showcmd = false,
+				},
+			},
 		},
-	},
-	{
-		"kyazdani42/nvim-tree.lua",
-		dependencies = "kyazdani42/nvim-web-devicons",
 	},
 	{
 		"nvim-lualine/lualine.nvim",
-		dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
-	},
-	{
-		"nvim-telescope/telescope.nvim",
-		version = "0.1.x",
-		dependencies = "nvim-lua/plenary.nvim",
-	},
-	"nvim-treesitter/nvim-treesitter",
-	"nvim-telescope/telescope-fzy-native.nvim",
-	{
-		"nvim-telescope/telescope-live-grep-args.nvim",
-		-- This will not install any breaking changes.
-		-- For major updates, this must be adjusted manually.
-		version = "^1.0.0",
-	},
-
-	-- [[ nice to have ]]
-	{ "mhinz/vim-startify", lazy = false },
-	"danilamihailov/beacon.nvim",
-
-	-- [[ themes ]]
-	{ "Mofiqul/dracula.nvim", lazy = false },
-	{ "EdenEast/nightfox.nvim", lazy = false },
-	{ "ellisonleao/gruvbox.nvim", lazy = false },
-	{ "rebelot/kanagawa.nvim", lazy = false },
-	{ "catppuccin/nvim", name = "catppuccin" },
-	{ "vague2k/vague.nvim" },
-
-	-- [[ package manager ]]
-	{
-		"williamboman/mason.nvim",
-		"williamboman/mason-lspconfig.nvim",
-		"neovim/nvim-lspconfig",
-	},
-	{
-		"ilof2/posterpole.nvim",
-		priority = 1000,
-		config = function()
-			local posterpole = require("posterpole")
-			posterpole.setup({
-				-- config here
-			})
-			vim.cmd("colorscheme posterpole")
-
-			-- This function create sheduled task, which will reload theme every hour
-			-- Without "setup_adaptive" adaptive brightness will be set only after every restart
-			posterpole.setup_adaptive()
-		end,
-	},
-
-	-- [[ coding ]]
-	{ "mhartington/formatter.nvim", lazy = false },
-	"hrsh7th/nvim-cmp", -- Autocompletion plugin
-	"hrsh7th/cmp-nvim-lsp", -- LSP source for nvim-cmp
-	"saadparwaiz1/cmp_luasnip", -- Snippets source for nvim-cmp
-	"L3MON4D3/LuaSnip", -- Snippets plugin
-	{
-		"ruifm/gitlinker.nvim",
-		dependencies = "nvim-lua/plenary.nvim",
-	},
-	"lewis6991/gitsigns.nvim",
-	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
-	"folke/trouble.nvim",
-	"tpope/vim-repeat",
-	{ "tpope/vim-surround", lazy = false },
-	"ggandor/leap.nvim",
-	{ "wakatime/vim-wakatime", lazy = false },
-	"simrat39/symbols-outline.nvim",
-	{ "f-person/git-blame.nvim", lazy = true },
-	"karb94/neoscroll.nvim",
-	"voldikss/vim-floaterm",
-	{ "sindrets/diffview.nvim", lazy = false },
-	{
-		"numToStr/Comment.nvim",
+		event = "VeryLazy",
+		dependencies = { "kyazdani42/nvim-web-devicons" },
 		opts = {
-			-- add any options here
+			options = {
+				theme = "auto",
+				globalstatus = true,
+			},
 		},
 	},
 	{
-		"tpope/vim-rails",
+		"nvim-tree/nvim-tree.lua",
+		cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+		dependencies = { "kyazdani42/nvim-web-devicons" },
+		opts = {
+			git = { enable = true },
+			renderer = { highlight_git = true },
+		},
+	},
+
+	-- [[ Theme Collection ]]
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000,
 		lazy = false,
+		opts = {
+			flavour = "mocha",
+			transparent_background = false,
+		},
+	},
+	{ "Mofiqul/dracula.nvim", priority = 1000, lazy = false },
+	{ "EdenEast/nightfox.nvim", priority = 1000, lazy = false },
+	{ "ellisonleao/gruvbox.nvim", priority = 1000, lazy = false },
+	{ "rebelot/kanagawa.nvim", priority = 1000, lazy = false },
+	{ "vague2k/vague.nvim", priority = 1000, lazy = false },
+
+	-- [[ Adaptive Theme ]]
+	{
+		"ilof2/posterpole.nvim",
+		priority = 1000,
+		lazy = false,
+		config = function()
+			require("posterpole").setup({
+				-- config here
+			})
+			vim.cmd("colorscheme posterpole")
+			require("posterpole").setup_adaptive()
+		end,
+	},
+
+	-- [[ Fuzzy Finder ]]
+	{
+		"nvim-telescope/telescope.nvim",
+		version = "0.1.x",
+		cmd = "Telescope",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope-fzy-native.nvim",
+			{
+				"nvim-telescope/telescope-live-grep-args.nvim",
+				version = "^1.0.0",
+			},
+		},
+		opts = {
+			extensions = {
+				fzy_native = {
+					fuzzy = true,
+					override_generic_sorter = true,
+					override_file_sorter = true,
+				},
+			},
+		},
+	},
+
+	-- [[ LSP and Completion ]]
+	{
+		"williamboman/mason.nvim",
+		cmd = "Mason",
+		opts = {
+			ui = {
+				border = "rounded",
+			},
+		},
+	},
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+	},
+	{ "neovim/nvim-lspconfig", event = "VeryLazy" },
+	{
+		"hrsh7th/nvim-cmp",
+		event = "InsertEnter",
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"saadparwaiz1/cmp_luasnip",
+			"L3MON4D3/LuaSnip",
+		},
+	},
+
+	-- [[ Git Integration ]]
+	{
+		"lewis6991/gitsigns.nvim",
+		event = "VeryLazy",
+		opts = {
+			signs = {
+				add = { text = "│" },
+				change = { text = "│" },
+				delete = { text = "│" },
+			},
+		},
+	},
+	{
+		"ruifm/gitlinker.nvim",
+		event = "VeryLazy",
+		dependencies = "nvim-lua/plenary.nvim",
+	},
+	{
+		"sindrets/diffview.nvim",
+		cmd = { "DiffviewOpen", "DiffviewClose" },
+	},
+
+	-- [[ Editor Enhancement ]]
+	{
+		"nvim-treesitter/nvim-treesitter",
+		event = "VeryLazy",
+		build = ":TSUpdate",
+	},
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		event = "VeryLazy",
+		main = "ibl",
+		opts = {},
+	},
+	{
+		"numToStr/Comment.nvim",
+		event = "VeryLazy",
+		opts = {},
+	},
+	{
+		"tpope/vim-surround",
+		event = "VeryLazy",
+	},
+	{
+		"ggandor/leap.nvim",
+		event = "VeryLazy",
+	},
+	{
+		"karb94/neoscroll.nvim",
+		event = "VeryLazy",
+		opts = {},
+	},
+	{
+		"folke/trouble.nvim",
+		cmd = "Trouble",
+		dependencies = "kyazdani42/nvim-web-devicons",
+	},
+
+	-- [[ Terminal ]]
+	{
+		"voldikss/vim-floaterm",
+		cmd = { "FloatermNew", "FloatermToggle" },
+	},
+
+	-- [[ Rails Support ]]
+	{
+		"tpope/vim-rails",
+		ft = { "ruby", "eruby" },
 	},
 	{
 		"tpope/vim-rake",
-		lazy = false,
+		ft = "ruby",
 	},
-	{ "tpope/vim-projectionist", lazy = false },
+	{
+		"tpope/vim-projectionist",
+		ft = { "ruby", "javascript", "typescript" },
+	},
+
+	-- [[ Formatting ]]
+	{
+		"mhartington/formatter.nvim",
+		event = "VeryLazy",
+		config = function()
+			local util = require("formatter.util")
+			local prettierConfig = function()
+				return {
+					exe = "prettier",
+					args = { "--stdin-filepath", vim.fn.shellescape(vim.api.nvim_buf_get_name(0)) },
+					stdin = true,
+				}
+			end
+
+			require("formatter").setup({
+				logging = true,
+				log_level = vim.log.levels.WARN,
+				filetype = {
+					json = { prettierConfig },
+					html = { prettierConfig },
+					javascript = { prettierConfig },
+					typescript = { prettierConfig },
+					typescriptreact = { prettierConfig },
+					go = {
+						function()
+							return {
+								exe = "gofmt",
+								stdin = true,
+							}
+						end,
+					},
+					lua = {
+						require("formatter.filetypes.lua").stylua,
+						function()
+							if util.get_current_buffer_file_name() == "special.lua" then
+								return nil
+							end
+							return {
+								exe = "stylua",
+								args = {
+									"--search-parent-directories",
+									"--stdin-filepath",
+									util.escape_path(util.get_current_buffer_file_path()),
+									"--",
+									"-",
+								},
+								stdin = true,
+							}
+						end,
+					},
+					["*"] = {
+						require("formatter.filetypes.any").remove_trailing_whitespace,
+					},
+				},
+			})
+		end,
+	},
+
+	-- [[ Misc ]]
+	{ "mhinz/vim-startify", lazy = false },
+	{ "danilamihailov/beacon.nvim", event = "VeryLazy" },
+	{ "tpope/vim-repeat", event = "VeryLazy" },
+	{ "wakatime/vim-wakatime", lazy = false },
 }
