@@ -130,6 +130,7 @@ require("nvim-tree").setup({
 		},
 	},
 	view = {
+    adaptive_size = true,
 		float = {
 			enable = false, -- Disable floating window
 		},

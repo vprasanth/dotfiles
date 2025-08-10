@@ -28,6 +28,7 @@ keymap.set("n", "fh", function() require("telescope.builtin").help_tags() end, {
 keymap.set("n", "fm", function() require("telescope.builtin").marks() end, { desc = "Find marks" })
 keymap.set("n", "ft", function() require("telescope.builtin").treesitter() end, { desc = "Find treesitter symbols" })
 keymap.set("n", "fa", function() require("telescope.builtin").git_files() end, { desc = "Find git files" })
+keymap.set("n", "fc", function() require("telescope.builtin").git_status() end, { desc = "Find git files from status" })
 keymap.set("n", "fo", function() require("telescope.builtin").oldfiles() end, { desc = "Find old files" })
 keymap.set("n", "fr", function() require("telescope.builtin").lsp_references() end, { desc = "Find LSP references" })
 keymap.set("n", "fd", function() require("telescope.builtin").lsp_definitions() end, { desc = "Find LSP definitions" })
