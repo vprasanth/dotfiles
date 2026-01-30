@@ -96,7 +96,7 @@ M.on_attach = function(client, bufnr)
 	client.server_capabilities.documentRangeFormattingProvider = true
 
 	-- Initialize change tracking for this client if supported
-	if client.supports_method("textDocument/didChange") then
+	if client:supports_method("textDocument/didChange") then
 		vim.lsp._changetracking.init(client, bufnr)
 	end
 end
@@ -106,8 +106,29 @@ M.flags = {
 	debounce_text_changes = 150, -- Debounce time for text changes in milliseconds
 }
 
+-- Add this to your setup function, before the Mason setup
+local function setup_diagnostics()
+    vim.diagnostic.config({
+        signs = {
+            text = {
+                [vim.diagnostic.severity.ERROR] = "✗",
+                [vim.diagnostic.severity.WARN] = "⚠",
+                [vim.diagnostic.severity.INFO] = "ℹ",
+                [vim.diagnostic.severity.HINT] = "💡",
+            },
+        },
+        virtual_text = {
+            prefix = "●",
+        },
+        float = {
+            source = "always",
+        },
+    })
+end
+
 --- Setup function that initializes Mason and configures LSP servers
 M.setup = function()
+	setup_diagnostics() -- Add this line
 	-- Setup LSP performance optimizations
 	setup_lsp_performance()
 
@@ -127,18 +148,19 @@ M.setup = function()
 	-- Configure Mason LSP installer
 	require("mason-lspconfig").setup({
 		ensure_installed = {
-			"lua_ls", -- Lua language server
-			"ts_ls", -- TypeScript/JavaScript language server
-			"ruff", -- Python linter and formatter
-			"rubocop", -- Ruby linter and formatter
-			"solargraph", -- Ruby language server
-			"sorbet", -- Ruby type checker
+			"lua_ls",
+			"ts_ls",
+			"ruff",
+			"ruby_lsp",    -- Modern Ruby language server
+			"sorbet",      -- Your type checker
+			-- Remove rubocop from LSP, use it via formatter instead
+			-- Remove solargraph to avoid conflicts with ruby_lsp
 		},
 		automatic_installation = true,
 	})
 
 	-- Setup LSP servers
-	local lspconfig = require("lspconfig")
+  local lspconfig = require("lspconfig")
 	local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 	-- Common settings for all LSP servers
@@ -179,6 +201,9 @@ M.setup = function()
 						completeFunctionCalls = true,
 					},
 					updateImportsOnFileMove = "always",
+					preferences = {
+						includePackageJsonInImports = "off",
+					},
 				},
 				javascript = {
 					format = { enable = true },
@@ -188,40 +213,47 @@ M.setup = function()
 						completeFunctionCalls = true,
 					},
 					updateImportsOnFileMove = "always",
+					preferences = {
+						includePackageJsonInImports = "off",
+					},
 				},
 			},
 		},
 		-- Ruby language server configuration
-		solargraph = {
+		rubocop = {
+			cmd = { "bundle", "exec", "rubocop", "--lsp" },
 			settings = {
-				solargraph = {
-					diagnostics = true,
-					formatting = true,
+				rubocop = {
 					useBundler = true,
-					checkGemVersion = true,
-					commandPath = "solargraph",
-					logLevel = "warn",
-					-- Performance optimizations
-					completion = true,
-					hover = true,
-					symbols = true,
-					definitions = true,
-					references = true,
-					folding = true,
-					rename = true,
 				},
-			},
-			initializationOptions = {
-				formatting = true,
-				maxFiles = 25000,
 			},
 		},
 		-- Ruby type checker configuration
 		sorbet = {
+			cmd = { "bundle", "exec", "srb", "tc", "--lsp" },
 			settings = {
 				sorbet = {
-					commandPath = "srb",
+					commandPath = "bundle exec srb",
 					logLevel = "warn",
+				},
+			},
+			root_dir = function(fname)
+				return require("lspconfig.util").root_pattern("sorbet/config", ".git")(fname)
+			end,
+		},
+		-- Add ruby_lsp configuration
+		ruby_lsp = {
+			settings = {
+				ruby_lsp = {
+					enabledFeatures = {
+						diagnostics = true,
+						documentSymbols = true,
+						foldingRanges = true,
+						selectionRanges = true,
+						semanticHighlighting = true,
+						formatting = false, -- Let RuboCop handle formatting
+						codeActions = true,
+					},
 				},
 			},
 		},
@@ -232,15 +264,15 @@ M.setup = function()
 		"lua_ls",
 		"ts_ls",
 		"ruff",
-		"rubocop",
-		"solargraph",
+		"ruby_lsp",
 		"sorbet",
 	}
 
 	-- Configure each LSP server with common and server-specific settings
 	for _, server in ipairs(servers) do
 		local settings = vim.tbl_deep_extend("force", common_settings, server_settings[server] or {})
-		lspconfig[server].setup(settings)
+		-- lspconfig[server].setup(settings)
+    vim.lsp.enable(server)
 	end
 end
 

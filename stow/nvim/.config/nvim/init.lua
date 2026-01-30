@@ -76,7 +76,7 @@ vim.g.localleader = "\\" -- Local leader key for filetype-specific mappings
 require("lazy").setup(require("plugins"), {
 	defaults = { lazy = true }, -- Lazy load plugins by default
 	install = { colorscheme = { "kanagawa-wave" } }, -- Default colorscheme
-	checker = { enabled = true }, -- Check for plugin updates
+	checker = { enabled = false }, -- Check for plugin updates
 	change_detection = { notify = false }, -- Don't notify on config changes
 	performance = {
 		rtp = {
@@ -130,7 +130,7 @@ require("nvim-tree").setup({
 		},
 	},
 	view = {
-    adaptive_size = true,
+		adaptive_size = true,
 		float = {
 			enable = false, -- Disable floating window
 		},
@@ -160,3 +160,9 @@ require("ibl").setup() -- Indent blankline
 require("trouble").setup() -- Quickfix and location list
 require("leap").add_default_mappings() -- Enhanced motion
 require("neoscroll").setup() -- Smooth scrolling
+require("lualine").setup({
+	sections = {
+		lualine_x = { require("yaml_nvim").get_yaml_key_and_value },
+		-- etc
+	},
+})

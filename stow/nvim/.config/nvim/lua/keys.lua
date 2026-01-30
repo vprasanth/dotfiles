@@ -33,6 +33,7 @@ keymap.set("n", "fo", function() require("telescope.builtin").oldfiles() end, { 
 keymap.set("n", "fr", function() require("telescope.builtin").lsp_references() end, { desc = "Find LSP references" })
 keymap.set("n", "fd", function() require("telescope.builtin").lsp_definitions() end, { desc = "Find LSP definitions" })
 keymap.set("n", "fs", function() require("telescope.builtin").lsp_document_symbols() end, { desc = "Find LSP document symbols" })
+keymap.set("n", "fy", function() require("yaml_nvim").telescope() end, { desc = "YAML telescope fuzzy finder" })
 
 -- [[ Buffer Management ]]
 -- All buffer operations start with <LEADER>b

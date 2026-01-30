@@ -151,6 +151,11 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		event = "VeryLazy",
 		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter.configs").setup({
+				ensure_installed = { "yaml" },
+			})
+		end,
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -180,6 +185,16 @@ return {
 		"folke/trouble.nvim",
 		cmd = "Trouble",
 		dependencies = "kyazdani42/nvim-web-devicons",
+	},
+
+	{
+		"cuducos/yaml.nvim",
+		ft = { "yaml" }, -- optional
+		dependencies = {
+			"folke/snacks.nvim", -- optional
+			"nvim-telescope/telescope.nvim", -- optional
+			"ibhagwan/fzf-lua", -- optional
+		},
 	},
 
 	-- [[ Terminal ]]
