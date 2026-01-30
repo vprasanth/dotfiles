@@ -14,37 +14,6 @@
 
 local M = {}
 
--- Performance optimizations for LSP
-local function setup_lsp_performance()
-	-- Reduce LSP update time
-	vim.opt.updatetime = 100
-
-	-- Configure diagnostic display
-	vim.diagnostic.config({
-		virtual_text = true,
-		signs = true,
-		underline = true,
-		update_in_insert = false,
-		severity_sort = true,
-		float = {
-			border = "rounded",
-			source = "always",
-		},
-	})
-
-	-- Configure LSP signs
-	local signs = {
-		Error = " ",
-		Warn = " ",
-		Hint = " ",
-		Info = " ",
-	}
-	for type, icon in pairs(signs) do
-		local hl = "DiagnosticSign" .. type
-		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-	end
-end
-
 --- LSP on_attach function that runs when a language server attaches to a buffer
 --- @param client table The LSP client instance
 --- @param bufnr number The buffer number
@@ -90,15 +59,6 @@ M.on_attach = function(client, bufnr)
 	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
 	vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
 	vim.keymap.set("n", "<space>f", vim.lsp.buf.format, bufopts)
-
-	-- Enable formatting capabilities
-	client.server_capabilities.documentFormattingProvider = true
-	client.server_capabilities.documentRangeFormattingProvider = true
-
-	-- Initialize change tracking for this client if supported
-	if client:supports_method("textDocument/didChange") then
-		vim.lsp._changetracking.init(client, bufnr)
-	end
 end
 
 -- Global LSP flags
@@ -106,32 +66,8 @@ M.flags = {
 	debounce_text_changes = 150, -- Debounce time for text changes in milliseconds
 }
 
--- Add this to your setup function, before the Mason setup
-local function setup_diagnostics()
-    vim.diagnostic.config({
-        signs = {
-            text = {
-                [vim.diagnostic.severity.ERROR] = "✗",
-                [vim.diagnostic.severity.WARN] = "⚠",
-                [vim.diagnostic.severity.INFO] = "ℹ",
-                [vim.diagnostic.severity.HINT] = "💡",
-            },
-        },
-        virtual_text = {
-            prefix = "●",
-        },
-        float = {
-            source = "always",
-        },
-    })
-end
-
 --- Setup function that initializes Mason and configures LSP servers
 M.setup = function()
-	setup_diagnostics() -- Add this line
-	-- Setup LSP performance optimizations
-	setup_lsp_performance()
-
 	-- Configure Mason package manager
 	require("mason").setup({
 		ui = {
@@ -149,19 +85,21 @@ M.setup = function()
 	require("mason-lspconfig").setup({
 		ensure_installed = {
 			"lua_ls",
-			"ts_ls",
+			"vtsls",
 			"ruff",
-			"ruby_lsp",    -- Modern Ruby language server
-			"sorbet",      -- Your type checker
+			"gopls",
 			-- Remove rubocop from LSP, use it via formatter instead
 			-- Remove solargraph to avoid conflicts with ruby_lsp
 		},
-		automatic_installation = true,
+		automatic_installation = false,
 	})
 
-	-- Setup LSP servers
-  local lspconfig = require("lspconfig")
-	local capabilities = require("cmp_nvim_lsp").default_capabilities()
+	-- Setup LSP servers (native config)
+	local capabilities = vim.lsp.protocol.make_client_capabilities()
+	local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+	if ok_cmp then
+		capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+	end
 
 	-- Common settings for all LSP servers
 	local common_settings = {
@@ -175,6 +113,25 @@ M.setup = function()
 
 	-- Server-specific settings and configurations
 	local server_settings = {
+		-- Go language server configuration
+		gopls = {
+			settings = {
+				gopls = {
+					usePlaceholders = true,
+					analyses = {
+						unusedparams = true,
+						nilness = true,
+						shadow = true,
+						unreachable = true,
+					},
+					staticcheck = true,
+				},
+			},
+			filetypes = { "go", "gomod", "gowork", "gotmpl" },
+			root_dir = function(fname)
+				return vim.fs.root(fname, { "go.work", "go.mod", ".git" }) or vim.fn.getcwd()
+			end,
+		},
 		-- Lua language server configuration
 		lua_ls = {
 			settings = {
@@ -191,33 +148,34 @@ M.setup = function()
 			},
 		},
 		-- TypeScript/JavaScript language server configuration
-		ts_ls = {
+		vtsls = {
+			filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+			root_dir = function(fname)
+				return vim.fs.root(fname, { "tsconfig.json", "package.json", ".git" }) or vim.fn.getcwd()
+			end,
 			settings = {
-				typescript = {
-					format = { enable = true },
-					inlayHints = { enabled = true },
-					-- Performance optimizations
-					suggest = {
-						completeFunctionCalls = true,
+				vtsls = {
+					autoUseWorkspaceTsdk = true,
+					experimental = {
+						maxInlayHintLength = 40,
 					},
+				},
+				typescript = {
 					updateImportsOnFileMove = "always",
 					preferences = {
 						includePackageJsonInImports = "off",
 					},
+					inlayHints = { enabled = true },
 				},
 				javascript = {
-					format = { enable = true },
-					inlayHints = { enabled = true },
-					-- Performance optimizations
-					suggest = {
-						completeFunctionCalls = true,
-					},
 					updateImportsOnFileMove = "always",
 					preferences = {
 						includePackageJsonInImports = "off",
 					},
+					inlayHints = { enabled = true },
 				},
 			},
+			single_file_support = false,
 		},
 		-- Ruby language server configuration
 		rubocop = {
@@ -238,7 +196,8 @@ M.setup = function()
 				},
 			},
 			root_dir = function(fname)
-				return require("lspconfig.util").root_pattern("sorbet/config", ".git")(fname)
+				local root = vim.fs.root(fname, { "sorbet/config", ".git" })
+				return root or vim.fn.getcwd()
 			end,
 		},
 		-- Add ruby_lsp configuration
@@ -262,17 +221,24 @@ M.setup = function()
 	-- List of LSP servers to configure
 	local servers = {
 		"lua_ls",
-		"ts_ls",
+		"vtsls",
 		"ruff",
-		"ruby_lsp",
-		"sorbet",
+		"gopls",
 	}
 
 	-- Configure each LSP server with common and server-specific settings
 	for _, server in ipairs(servers) do
 		local settings = vim.tbl_deep_extend("force", common_settings, server_settings[server] or {})
-		-- lspconfig[server].setup(settings)
-    vim.lsp.enable(server)
+		vim.lsp.config(server, settings)
+		vim.lsp.enable(server)
+	end
+
+	-- Configure Ruby servers with explicit filetypes for safe autostart
+	for _, server in ipairs({ "ruby_lsp", "sorbet" }) do
+		local settings = vim.tbl_deep_extend("force", common_settings, server_settings[server] or {})
+		settings.filetypes = { "ruby", "eruby" }
+		vim.lsp.config(server, settings)
+		vim.lsp.enable(server)
 	end
 end
 

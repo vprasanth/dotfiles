@@ -30,7 +30,7 @@ opt.updatetime = 300 -- Faster completion (default: 4000ms)
 opt.timeoutlen = 500 -- Time to wait for a mapped sequence to complete
 
 -- [[ Theme and UI ]]
-opt.syntax = "ON" -- Enable syntax highlighting
+vim.cmd("syntax on") -- Enable syntax highlighting
 opt.termguicolors = true -- Enable true color support
 opt.background = "dark" -- Use dark background
 vim.cmd([[colorscheme kanagawa-wave]]) -- Set colorscheme
@@ -104,6 +104,5 @@ opt.wildignore = {
 }
 
 -- [[ Plugin Options ]]
-g.neoformat_try_node_exe = 1
 g.gitblame_enabled = 0
 opt.mouse = "" -- Disable mouse support

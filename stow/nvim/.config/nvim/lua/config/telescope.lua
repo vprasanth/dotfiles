@@ -33,7 +33,7 @@ M.setup = function()
 				i = {
 					["<C-j>"] = actions.move_selection_next,
 					["<C-k>"] = actions.move_selection_previous,
-					["c-r"] = function(bufnr)
+					["<C-r>"] = function(bufnr)
 						require("telescope.actions.set").edit(bufnr, "tab drop")
 					end,
 				},

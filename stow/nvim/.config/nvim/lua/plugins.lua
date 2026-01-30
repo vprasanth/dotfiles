@@ -2,7 +2,7 @@
 return {
 	-- [[ Core dependencies ]]
 	{ "nvim-lua/plenary.nvim", lazy = true },
-	{ "kyazdani42/nvim-web-devicons", lazy = true },
+	{ "nvim-tree/nvim-web-devicons", lazy = true },
 
 	-- [[ UI and Theme ]]
 	{
@@ -27,18 +27,50 @@ return {
 		"nvim-lualine/lualine.nvim",
 		event = "VeryLazy",
 		dependencies = { "kyazdani42/nvim-web-devicons" },
-		opts = {
-			options = {
-				theme = "auto",
-				globalstatus = true,
+			opts = {
+				options = {
+					theme = "auto",
+					globalstatus = true,
+				},
+				sections = {
+					lualine_x = {
+						function()
+							if vim.bo.filetype ~= "yaml" then
+								return ""
+							end
+							local yaml = package.loaded["yaml_nvim"]
+							if yaml and yaml.get_yaml_key_and_value then
+								return yaml.get_yaml_key_and_value()
+							end
+							return ""
+						end,
+					},
+				},
 			},
 		},
-	},
 	{
 		"nvim-tree/nvim-tree.lua",
 		cmd = { "NvimTreeToggle", "NvimTreeFocus" },
 		dependencies = { "kyazdani42/nvim-web-devicons" },
+		keys = {
+			{ "<LEADER>e", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+		},
 		opts = {
+			disable_netrw = true,
+			hijack_netrw = true,
+			respect_buf_cwd = true,
+			sync_root_with_cwd = true,
+			actions = {
+				change_dir = {
+					enable = false,
+				},
+			},
+			view = {
+				adaptive_size = true,
+				float = {
+					enable = false,
+				},
+			},
 			git = { enable = true },
 			renderer = { highlight_git = true },
 		},
@@ -48,18 +80,17 @@ return {
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
-		priority = 1000,
-		lazy = false,
+		lazy = true,
 		opts = {
 			flavour = "mocha",
 			transparent_background = false,
 		},
 	},
-	{ "Mofiqul/dracula.nvim", priority = 1000, lazy = false },
-	{ "EdenEast/nightfox.nvim", priority = 1000, lazy = false },
-	{ "ellisonleao/gruvbox.nvim", priority = 1000, lazy = false },
+	{ "Mofiqul/dracula.nvim", lazy = true },
+	{ "EdenEast/nightfox.nvim", lazy = true },
+	{ "ellisonleao/gruvbox.nvim", lazy = true },
 	{ "rebelot/kanagawa.nvim", priority = 1000, lazy = false },
-	{ "vague2k/vague.nvim", priority = 1000, lazy = false },
+	{ "vague2k/vague.nvim", lazy = true },
 
 	-- [[ Adaptive Theme ]]
 	{
@@ -70,8 +101,6 @@ return {
 			require("posterpole").setup({
 				-- config here
 			})
-			vim.cmd("colorscheme posterpole")
-			require("posterpole").setup_adaptive()
 		end,
 	},
 
@@ -80,6 +109,20 @@ return {
 		"nvim-telescope/telescope.nvim",
 		version = "0.1.x",
 		cmd = "Telescope",
+		keys = {
+			{ "<LEADER>ff", function() require("telescope.builtin").find_files() end, desc = "Find files" },
+			{ "<LEADER>fg", function() require("telescope.builtin").live_grep() end, desc = "Live grep" },
+			{ "<LEADER>fb", function() require("telescope.builtin").buffers() end, desc = "Find buffers" },
+			{ "<LEADER>fh", function() require("telescope.builtin").help_tags() end, desc = "Find help tags" },
+			{ "<LEADER>fm", function() require("telescope.builtin").marks() end, desc = "Find marks" },
+			{ "<LEADER>ft", function() require("telescope.builtin").treesitter() end, desc = "Find treesitter symbols" },
+			{ "<LEADER>fa", function() require("telescope.builtin").git_files() end, desc = "Find git files" },
+			{ "<LEADER>fc", function() require("telescope.builtin").git_status() end, desc = "Find git files from status" },
+			{ "<LEADER>fo", function() require("telescope.builtin").oldfiles() end, desc = "Find old files" },
+			{ "<LEADER>fr", function() require("telescope.builtin").lsp_references() end, desc = "Find LSP references" },
+			{ "<LEADER>fd", function() require("telescope.builtin").lsp_definitions() end, desc = "Find LSP definitions" },
+			{ "<LEADER>fs", function() require("telescope.builtin").lsp_document_symbols() end, desc = "Find LSP document symbols" },
+		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-telescope/telescope-fzy-native.nvim",
@@ -88,15 +131,55 @@ return {
 				version = "^1.0.0",
 			},
 		},
-		opts = {
-			extensions = {
-				fzy_native = {
-					fuzzy = true,
-					override_generic_sorter = true,
-					override_file_sorter = true,
+		opts = function()
+			local actions = require("telescope.actions")
+			return {
+				pickers = {
+					git_status = {
+						layout_config = {
+							width = { padding = 0.1 },
+							height = { padding = 0.1 },
+						},
+					},
+					find_files = {
+						layout_config = {
+							width = { padding = 0.1 },
+							height = { padding = 0.1 },
+						},
+					},
+					live_grep = {
+						layout_config = {
+							width = { padding = 0.1 },
+							height = { padding = 0.1 },
+						},
+					},
 				},
-			},
-		},
+				defaults = {
+					mappings = {
+						i = {
+							["<C-j>"] = actions.move_selection_next,
+							["<C-k>"] = actions.move_selection_previous,
+							["<C-r>"] = function(bufnr)
+								require("telescope.actions.set").edit(bufnr, "tab drop")
+							end,
+						},
+					},
+				},
+				extensions = {
+					fzy_native = {
+						fuzzy = true,
+						override_generic_sorter = true,
+						override_file_sorter = true,
+					},
+				},
+			}
+		end,
+		config = function(_, opts)
+			local telescope = require("telescope")
+			telescope.setup(opts)
+			pcall(telescope.load_extension, "fzy_native")
+			pcall(telescope.load_extension, "live_grep_args")
+		end,
 	},
 
 	-- [[ LSP and Completion ]]
@@ -111,9 +194,12 @@ return {
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = { "williamboman/mason.nvim" },
+		config = function()
+			require("config.lsp").setup()
+		end,
 	},
-	{ "neovim/nvim-lspconfig", event = "VeryLazy" },
 	{
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
@@ -122,12 +208,18 @@ return {
 			"saadparwaiz1/cmp_luasnip",
 			"L3MON4D3/LuaSnip",
 		},
+		config = function()
+			require("config.cmp").setup()
+		end,
 	},
 
 	-- [[ Git Integration ]]
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "VeryLazy",
+		keys = {
+			{ "<LEADER>gb", function() require("gitsigns").blame_line() end, desc = "Git blame line" },
+		},
 		opts = {
 			signs = {
 				add = { text = "│" },
@@ -140,22 +232,48 @@ return {
 		"ruifm/gitlinker.nvim",
 		event = "VeryLazy",
 		dependencies = "nvim-lua/plenary.nvim",
+		opts = {
+			callbacks = {
+				["repos%.fullscript%.io"] = function(url_data)
+					url_data.host = "git.fullscript.io"
+					return require("gitlinker.hosts").get_gitlab_type_url(url_data)
+				end,
+			},
+		},
 	},
 	{
 		"sindrets/diffview.nvim",
 		cmd = { "DiffviewOpen", "DiffviewClose" },
+		keys = {
+			{ "<LEADER>gd", "<cmd>DiffviewOpen<CR>", desc = "Open diff view" },
+			{ "<LEADER>gc", "<cmd>DiffviewClose<CR>", desc = "Close diff view" },
+		},
 	},
 
 	-- [[ Editor Enhancement ]]
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = "VeryLazy",
+		event = { "BufReadPost", "BufNewFile" },
 		build = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = { "yaml" },
-			})
-		end,
+		main = "nvim-treesitter.config",
+		opts = {
+			ensure_installed = {
+				"lua",
+				"vim",
+				"vimdoc",
+				"bash",
+				"json",
+				"yaml",
+				"javascript",
+				"typescript",
+				"tsx",
+				"css",
+				"markdown",
+				"markdown_inline",
+				"go",
+				"python",
+			},
+		},
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -173,8 +291,11 @@ return {
 		event = "VeryLazy",
 	},
 	{
-		"ggandor/leap.nvim",
+		"https://codeberg.org/andyg/leap.nvim",
 		event = "VeryLazy",
+		config = function()
+			require("leap").add_default_mappings()
+		end,
 	},
 	{
 		"karb94/neoscroll.nvim",
@@ -183,8 +304,14 @@ return {
 	},
 	{
 		"folke/trouble.nvim",
-		cmd = "Trouble",
+		cmd = { "Trouble", "TroubleToggle" },
 		dependencies = "kyazdani42/nvim-web-devicons",
+		keys = {
+			{ "<LEADER>dd", "<cmd>TroubleToggle<CR>", desc = "Toggle trouble" },
+			{ "<LEADER>dw", "<cmd>TroubleToggle workspace_diagnostics<CR>", desc = "Workspace diagnostics" },
+			{ "<LEADER>dl", "<cmd>TroubleToggle document_diagnostics<CR>", desc = "Document diagnostics" },
+		},
+		opts = {},
 	},
 
 	{
@@ -195,12 +322,25 @@ return {
 			"nvim-telescope/telescope.nvim", -- optional
 			"ibhagwan/fzf-lua", -- optional
 		},
+		keys = {
+			{
+				"<LEADER>fy",
+				function()
+					require("yaml_nvim").telescope()
+				end,
+				desc = "YAML telescope fuzzy finder",
+			},
+		},
 	},
 
 	-- [[ Terminal ]]
 	{
 		"voldikss/vim-floaterm",
 		cmd = { "FloatermNew", "FloatermToggle" },
+		keys = {
+			{ "<LEADER>tt", "<cmd>FloatermToggle<CR>", desc = "Toggle terminal" },
+			{ "<LEADER>tn", "<cmd>FloatermNew<CR>", desc = "New terminal" },
+		},
 	},
 
 	-- [[ Rails Support ]]
@@ -221,9 +361,39 @@ return {
 	{
 		"mhartington/formatter.nvim",
 		event = "VeryLazy",
+		cmd = "Format",
+		keys = {
+			{ "<LEADER>f", "<cmd>Format<CR>", desc = "Format current buffer" },
+		},
 		config = function()
 			local util = require("formatter.util")
+			local function is_executable(cmd)
+				return vim.fn.executable(cmd) == 1
+			end
+			local function rubocopConfig()
+				if not is_executable("rubocop") then
+					return nil
+				end
+				return {
+					exe = "rubocop",
+					args = { "--auto-correct", "--stdin", util.escape_path(util.get_current_buffer_file_path()) },
+					stdin = true,
+				}
+			end
+			local function eslintConfig()
+				if not is_executable("eslint_d") then
+					return nil
+				end
+				return {
+					exe = "eslint_d",
+					args = { "--stdin", "--stdin-filename", util.escape_path(util.get_current_buffer_file_path()), "--fix" },
+					stdin = true,
+				}
+			end
 			local prettierConfig = function()
+				if not is_executable("prettier") then
+					return nil
+				end
 				return {
 					exe = "prettier",
 					args = { "--stdin-filepath", vim.fn.shellescape(vim.api.nvim_buf_get_name(0)) },
@@ -235,13 +405,17 @@ return {
 				logging = true,
 				log_level = vim.log.levels.WARN,
 				filetype = {
+					ruby = { rubocopConfig },
 					json = { prettierConfig },
 					html = { prettierConfig },
-					javascript = { prettierConfig },
-					typescript = { prettierConfig },
-					typescriptreact = { prettierConfig },
+					javascript = { eslintConfig, prettierConfig },
+					typescript = { eslintConfig, prettierConfig },
+					typescriptreact = { eslintConfig, prettierConfig },
 					go = {
 						function()
+							if not is_executable("gofmt") then
+								return nil
+							end
 							return {
 								exe = "gofmt",
 								stdin = true,
@@ -249,9 +423,17 @@ return {
 						end,
 					},
 					lua = {
-						require("formatter.filetypes.lua").stylua,
+						function()
+							if not is_executable("stylua") then
+								return nil
+							end
+							return require("formatter.filetypes.lua").stylua()
+						end,
 						function()
 							if util.get_current_buffer_file_name() == "special.lua" then
+								return nil
+							end
+							if not is_executable("stylua") then
 								return nil
 							end
 							return {

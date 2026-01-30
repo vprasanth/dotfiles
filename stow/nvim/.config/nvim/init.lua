@@ -36,10 +36,6 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 
--- Reduce update time for better performance
-vim.opt.updatetime = 100
-vim.opt.timeoutlen = 500
-
 -- Optimize for large files
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -98,9 +94,6 @@ require("keys") -- Key mappings
 -- Load and setup plugin configurations from the config directory
 -- Each plugin's configuration is in its own file under lua/config/
 local configs = {
-	"lsp", -- Language Server Protocol configuration
-	"cmp", -- Completion configuration
-	"telescope", -- Fuzzy finder configuration
 	"diagnostics", -- Diagnostic display and navigation
 }
 
@@ -115,54 +108,4 @@ for _, config in ipairs(configs) do
 end
 
 -- [[ Additional Plugin Setup ]]
--- Direct plugin configurations that don't need their own files
--- These are simpler configurations that can be defined inline
-
--- NvimTree: File explorer configuration
-require("nvim-tree").setup({
-	disable_netrw = true, -- Disable netrw (built-in file explorer)
-	hijack_netrw = true, -- Take over netrw's functionality
-	respect_buf_cwd = true, -- Respect buffer's current working directory
-	sync_root_with_cwd = true, -- Keep root directory in sync with cwd
-	actions = {
-		change_dir = {
-			enable = false, -- Disable automatic directory changing
-		},
-	},
-	view = {
-		adaptive_size = true,
-		float = {
-			enable = false, -- Disable floating window
-		},
-	},
-})
-
--- Lualine: Status line configuration
-require("lualine").setup({
-	options = {
-		theme = "dracula-nvim", -- Use dracula theme for status line
-	},
-})
-
--- Gitlinker: Git URL handling
-require("gitlinker").setup({
-	callbacks = {
-		["repos%.fullscript%.io"] = function(url_data)
-			url_data.host = "git.fullscript.io"
-			return require("gitlinker.hosts").get_gitlab_type_url(url_data)
-		end,
-	},
-})
-
--- Additional plugin configurations
-require("gitsigns").setup() -- Git signs in the gutter
-require("ibl").setup() -- Indent blankline
-require("trouble").setup() -- Quickfix and location list
-require("leap").add_default_mappings() -- Enhanced motion
-require("neoscroll").setup() -- Smooth scrolling
-require("lualine").setup({
-	sections = {
-		lualine_x = { require("yaml_nvim").get_yaml_key_and_value },
-		-- etc
-	},
-})
+-- Plugin configs are defined in `lua/plugins.lua` for lazy-loading.
