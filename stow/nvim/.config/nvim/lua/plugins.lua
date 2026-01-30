@@ -255,7 +255,7 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufReadPost", "BufNewFile" },
 		build = ":TSUpdate",
-		main = "nvim-treesitter.config",
+		main = "nvim-treesitter.configs",
 		opts = {
 			ensure_installed = {
 				"lua",
