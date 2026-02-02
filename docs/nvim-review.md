@@ -24,6 +24,11 @@ Diffview
 - `,gH` file history for repo
 - `,gD` compare current branch vs target (see below)
 
+GitLab (gitlab.nvim)
+- `,gr` review MR for current branch
+- `,gR` choose MR to review
+- `,gM` open MR in browser
+
 Notes
 - `,pp` Gitpad project notes
 - `,pb` Gitpad branch notes
@@ -68,3 +73,19 @@ echo origin/main > .diffview-target
 - `,gD` to compare target...HEAD
 4) Leave notes while you review:
 - `,pp` for project notes, `,pb` for branch notes, `,pl` to copy `path:line`.
+
+GitLab.nvim setup (self-hosted)
+-------------------------------
+Requirements:
+- Go installed (gitlab.nvim uses a Go server). The plugin requires Go >= 1.25.1.
+
+Authentication:
+- Set `GITLAB_TOKEN` in your environment, or create a `.gitlab.nvim` file in the
+  repo root. The file takes `auth_token` and optional `gitlab_url` values.
+- For self-hosted GitLab, set `GITLAB_URL` (env var) or `gitlab_url` in the file.
+
+Example `.gitlab.nvim`:
+```
+auth_token=your_gitlab_token
+gitlab_url=https://gitlab.your-company.com/
+```

@@ -295,6 +295,44 @@ return {
 			},
 		},
 	},
+	{
+		"harrisoncramer/gitlab.nvim",
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			"nvim-lua/plenary.nvim",
+			"sindrets/diffview.nvim",
+			"stevearc/dressing.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
+		build = function()
+			require("gitlab.server").build(true)
+		end,
+		keys = {
+			{
+				"<LEADER>gr",
+				function()
+					require("gitlab").review()
+				end,
+				desc = "GitLab review MR",
+			},
+			{
+				"<LEADER>gR",
+				function()
+					require("gitlab").choose_merge_request()
+				end,
+				desc = "GitLab choose MR",
+			},
+			{
+				"<LEADER>gM",
+				"glo",
+				desc = "GitLab open MR in browser",
+				remap = true,
+			},
+		},
+		config = function()
+			require("gitlab").setup()
+		end,
+	},
 	-- [[ Notes ]]
 	{
 		"yujinyuz/gitpad.nvim",
