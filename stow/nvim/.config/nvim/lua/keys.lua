@@ -35,6 +35,32 @@ keymap.set("n", "<LEADER>w=", function() vim.cmd.wincmd("=") end, { desc = "Equa
 keymap.set("n", "<LEADER>wv", function() vim.cmd.wincmd("v") end, { desc = "Split window vertically" })
 keymap.set("n", "<LEADER>ws", function() vim.cmd.wincmd("s") end, { desc = "Split window horizontally" })
 
+-- [[ Notes/Review ]]
+local function copy_file_line_ref()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    vim.notify("No file name for current buffer", vim.log.levels.WARN)
+    return
+  end
+  local line = vim.api.nvim_win_get_cursor(0)[1]
+  local git_dir = vim.fs.find(".git", { upward = true, path = vim.fs.dirname(file) })[1]
+  if git_dir then
+    local root = vim.fs.dirname(git_dir)
+    if vim.startswith(file, root .. "/") then
+      file = file:sub(#root + 2)
+    end
+  else
+    file = vim.fn.fnamemodify(file, ":.")
+  end
+  local ref = string.format("%s:%d", file, line)
+  vim.fn.setreg('"', ref)
+  if vim.fn.has("clipboard") == 1 then
+    vim.fn.setreg("+", ref)
+  end
+  vim.notify("Copied reference: " .. ref)
+end
+keymap.set("n", "<LEADER>pl", copy_file_line_ref, { desc = "Copy file:line reference" })
+
 -- LSP keymaps live in config/lsp.lua (gd/gr/...) and Telescope mappings in plugins.lua.
 
 -- [[ Zen Mode ]]

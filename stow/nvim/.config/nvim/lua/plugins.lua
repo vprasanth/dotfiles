@@ -268,10 +268,83 @@ return {
 	},
 	{
 		"sindrets/diffview.nvim",
-		cmd = { "DiffviewOpen", "DiffviewClose" },
+		cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
 		keys = {
 			{ "<LEADER>gd", "<cmd>DiffviewOpen<CR>", desc = "Open diff view" },
 			{ "<LEADER>gc", "<cmd>DiffviewClose<CR>", desc = "Close diff view" },
+			{ "<LEADER>gh", "<cmd>DiffviewFileHistory %<CR>", desc = "File history (current file)" },
+			{ "<LEADER>gH", "<cmd>DiffviewFileHistory<CR>", desc = "File history (repo)" },
+			{
+				"<LEADER>gD",
+				function()
+					local target = vim.g.diffview_target
+					if type(target) ~= "string" or target == "" then
+						local git_dir = vim.fs.find(".git", { upward = true })[1]
+						if git_dir then
+							local root = vim.fs.dirname(git_dir)
+							local ok, lines = pcall(vim.fn.readfile, root .. "/.diffview-target")
+							if ok and lines[1] and lines[1] ~= "" then
+								target = vim.fn.trim(lines[1])
+							end
+						end
+					end
+					target = target or "origin/main"
+					vim.cmd("DiffviewOpen " .. target .. "...HEAD")
+				end,
+				desc = "Diffview compare vs target",
+			},
+		},
+	},
+	-- [[ Notes ]]
+	{
+		"yujinyuz/gitpad.nvim",
+		keys = {
+			{
+				"<LEADER>pp",
+				function()
+					require("gitpad").toggle_gitpad()
+				end,
+				desc = "Gitpad project notes",
+			},
+			{
+				"<LEADER>pb",
+				function()
+					require("gitpad").toggle_gitpad_branch()
+				end,
+				desc = "Gitpad branch notes",
+			},
+			{
+				"<LEADER>pd",
+				function()
+					local date_filename = "daily-" .. os.date("%Y-%m-%d") .. ".md"
+					require("gitpad").toggle_gitpad({ filename = date_filename })
+				end,
+				desc = "Gitpad daily notes",
+			},
+			{
+				"<LEADER>pf",
+				function()
+					local filename = vim.fn.expand("%:p")
+					if filename == "" then
+						vim.notify("empty bufname", vim.log.levels.WARN)
+						return
+					end
+					filename = vim.fn.pathshorten(filename, 2) .. ".md"
+					require("gitpad").toggle_gitpad({ filename = filename })
+				end,
+				desc = "Gitpad per file notes",
+			},
+		},
+		opts = {},
+	},
+	{
+		"folke/snacks.nvim",
+		keys = {
+			{ "<LEADER>.", function() Snacks.scratch() end, desc = "Scratch buffer" },
+			{ "<LEADER>S", function() Snacks.scratch.select() end, desc = "Scratch buffer select" },
+		},
+		opts = {
+			scratch = { enabled = true },
 		},
 	},
 
