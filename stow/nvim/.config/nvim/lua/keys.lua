@@ -35,11 +35,7 @@ keymap.set("n", "<LEADER>w=", function() vim.cmd.wincmd("=") end, { desc = "Equa
 keymap.set("n", "<LEADER>wv", function() vim.cmd.wincmd("v") end, { desc = "Split window vertically" })
 keymap.set("n", "<LEADER>ws", function() vim.cmd.wincmd("s") end, { desc = "Split window horizontally" })
 
--- [[ LSP Operations ]]
--- All LSP operations start with <LEADER>l
-keymap.set("n", "<LEADER>lr", vim.lsp.buf.references, { desc = "Find LSP references" })
-keymap.set("n", "<LEADER>ld", vim.lsp.buf.definition, { desc = "Find LSP definitions" })
-keymap.set("n", "<LEADER>ls", vim.lsp.buf.document_symbol, { desc = "Find LSP document symbols" })
+-- LSP keymaps live in config/lsp.lua (gd/gr/...) and Telescope mappings in plugins.lua.
 
 -- [[ Zen Mode ]]
 keymap.set("n", "<LEADER>z", cmd("ZenMode"), { desc = "Toggle zen mode" })
