@@ -63,7 +63,7 @@ end
 
 -- Global LSP flags
 M.flags = {
-	debounce_text_changes = 150, -- Debounce time for text changes in milliseconds
+	debounce_text_changes = 200, -- Debounce time for text changes in milliseconds (increased for large projects)
 }
 
 --- Setup function that initializes Mason and configures LSP servers
@@ -115,6 +115,7 @@ M.setup = function()
 	local server_settings = {
 		-- Go language server configuration
 		gopls = {
+			cmd = { "gopls" },
 			settings = {
 				gopls = {
 					usePlaceholders = true,
@@ -134,6 +135,8 @@ M.setup = function()
 		},
 		-- Lua language server configuration
 		lua_ls = {
+			cmd = { "lua-language-server" },
+			filetypes = { "lua" },
 			settings = {
 				Lua = {
 					runtime = { version = "LuaJIT" },
@@ -149,6 +152,7 @@ M.setup = function()
 		},
 		-- TypeScript/JavaScript language server configuration
 		vtsls = {
+			cmd = { "vtsls", "--stdio" },
 			filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
 			root_dir = function(fname)
 				return vim.fs.root(fname, { "tsconfig.json", "package.json", ".git" }) or vim.fn.getcwd()
@@ -177,6 +181,11 @@ M.setup = function()
 			},
 			single_file_support = false,
 		},
+		-- Python linter/formatter
+		ruff = {
+			cmd = { "ruff", "server" },
+			filetypes = { "python" },
+		},
 		-- Ruby language server configuration
 		rubocop = {
 			cmd = { "bundle", "exec", "rubocop", "--lsp" },
@@ -193,26 +202,33 @@ M.setup = function()
 				sorbet = {
 					commandPath = "bundle exec srb",
 					logLevel = "warn",
+					highlightUntyped = false, -- Reduce noise in untyped files
 				},
 			},
-			root_dir = function(fname)
-				local root = vim.fs.root(fname, { "sorbet/config", ".git" })
-				return root or vim.fn.getcwd()
-			end,
 		},
 		-- Add ruby_lsp configuration
 		ruby_lsp = {
-			settings = {
-				ruby_lsp = {
-					enabledFeatures = {
-						diagnostics = true,
-						documentSymbols = true,
-						foldingRanges = true,
-						selectionRanges = true,
-						semanticHighlighting = true,
-						formatting = false, -- Let RuboCop handle formatting
-						codeActions = true,
-					},
+			cmd = { "ruby-lsp" },
+			init_options = {
+				experimentalFeaturesEnabled = false,
+				enabledFeatures = {
+					codeActions = true,
+					codeLens = false,
+					completion = true,
+					definition = true,
+					diagnostics = true,
+					documentHighlights = true,
+					documentLink = true,
+					documentSymbols = true,
+					foldingRanges = false, -- Disable for performance
+					formatting = false, -- Let RuboCop handle formatting
+					hover = true,
+					inlayHint = false, -- Disable for performance
+					onTypeFormatting = false,
+					selectionRanges = true,
+					semanticHighlighting = true,
+					signatureHelp = true,
+					typeHierarchy = true,
 				},
 			},
 		},
