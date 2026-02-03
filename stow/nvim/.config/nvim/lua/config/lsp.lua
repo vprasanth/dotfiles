@@ -19,7 +19,7 @@ local M = {}
 --- @param bufnr number The buffer number
 M.on_attach = function(client, bufnr)
 	-- Enable completion triggered by <c-x><c-o>
-	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+	vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
 	-- Set buffer local keymaps for LSP features
 	local bufopts = { noremap = true, silent = true, buffer = bufnr }
@@ -129,9 +129,7 @@ M.setup = function()
 				},
 			},
 			filetypes = { "go", "gomod", "gowork", "gotmpl" },
-			root_dir = function(fname)
-				return vim.fs.root(fname, { "go.work", "go.mod", ".git" }) or vim.fn.getcwd()
-			end,
+			root_markers = { "go.work", "go.mod", ".git" },
 		},
 		-- Lua language server configuration
 		lua_ls = {
@@ -152,11 +150,9 @@ M.setup = function()
 		},
 		-- TypeScript/JavaScript language server configuration
 		vtsls = {
-			cmd = { "vtsls", "--stdio" },
+			cmd = { vim.fn.stdpath("data") .. "/mason/bin/vtsls", "--stdio" },
 			filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-			root_dir = function(fname)
-				return vim.fs.root(fname, { "tsconfig.json", "package.json", ".git" }) or vim.fn.getcwd()
-			end,
+			root_markers = { "tsconfig.json", "package.json", ".git" },
 			settings = {
 				vtsls = {
 					autoUseWorkspaceTsdk = true,

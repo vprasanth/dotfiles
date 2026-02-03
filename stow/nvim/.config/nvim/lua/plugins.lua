@@ -185,7 +185,8 @@ return {
 	-- [[ LSP and Completion ]]
 	{
 		"williamboman/mason.nvim",
-		cmd = "Mason",
+		lazy = false,
+		priority = 100,
 		opts = {
 			ui = {
 				border = "rounded",
@@ -194,7 +195,8 @@ return {
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
-		event = { "BufReadPre", "BufNewFile" },
+		lazy = false,
+		priority = 99,
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
 			require("config.lsp").setup()
@@ -253,26 +255,54 @@ return {
 	-- [[ Editor Enhancement ]]
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPost", "BufNewFile" },
+		lazy = false,
 		build = ":TSUpdate",
 		config = function()
-			require("nvim-treesitter").setup({
-				ensure_installed = {
-					"lua",
-					"vim",
-					"vimdoc",
-					"bash",
-					"json",
-					"yaml",
-					"javascript",
-					"typescript",
-					"tsx",
-					"css",
-					"markdown",
-					"markdown_inline",
-					"go",
-					"python",
+			-- New nvim-treesitter API (rewritten plugin)
+			require("nvim-treesitter").setup({})
+
+			-- Install parsers asynchronously
+			require("nvim-treesitter").install({
+				"lua",
+				"vim",
+				"vimdoc",
+				"bash",
+				"json",
+				"yaml",
+				"javascript",
+				"typescript",
+				"tsx",
+				"css",
+				"markdown",
+				"markdown_inline",
+				"go",
+				"python",
+				"ruby",
+				"embedded_template",
+			})
+
+			-- Enable treesitter highlighting for all supported filetypes
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = {
+					"lua", "vim", "bash", "sh", "json", "yaml", "javascript", "typescript",
+					"typescriptreact", "javascriptreact", "css", "markdown", "go", "python",
+					"ruby", "eruby",
 				},
+				callback = function()
+					pcall(vim.treesitter.start)
+				end,
+			})
+
+			-- Enable treesitter-based folding
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "*",
+				callback = function()
+					if vim.treesitter.get_parser(0, nil, { error = false }) then
+						vim.wo[0][0].foldmethod = "expr"
+						vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+						vim.wo[0][0].foldenable = false -- Start with folds open
+					end
+				end,
 			})
 		end,
 	},
@@ -305,12 +335,12 @@ return {
 	},
 	{
 		"folke/trouble.nvim",
-		cmd = { "Trouble", "TroubleToggle" },
+		cmd = "Trouble",
 		dependencies = "kyazdani42/nvim-web-devicons",
 		keys = {
-			{ "<LEADER>dd", "<cmd>TroubleToggle<CR>", desc = "Toggle trouble" },
-			{ "<LEADER>dw", "<cmd>TroubleToggle workspace_diagnostics<CR>", desc = "Workspace diagnostics" },
-			{ "<LEADER>dl", "<cmd>TroubleToggle document_diagnostics<CR>", desc = "Document diagnostics" },
+			{ "<LEADER>dd", "<cmd>Trouble diagnostics toggle<CR>", desc = "Toggle trouble" },
+			{ "<LEADER>dw", "<cmd>Trouble diagnostics toggle<CR>", desc = "Workspace diagnostics" },
+			{ "<LEADER>dl", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", desc = "Buffer diagnostics" },
 		},
 		opts = {},
 	},
