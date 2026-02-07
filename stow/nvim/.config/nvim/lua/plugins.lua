@@ -202,6 +202,29 @@ return {
 			require("config.lsp").setup()
 		end,
 	},
+	-- TypeScript/JavaScript - native Neovim integration, better for large projects
+	{
+		"pmizio/typescript-tools.nvim",
+		ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = {
+			settings = {
+				-- Memory optimization for large projects
+				tsserver_max_memory = 8192,
+				-- Faster startup by not checking all files
+				tsserver_file_preferences = {
+					includeInlayParameterNameHints = "none",
+					includeInlayPropertyDeclarationTypeHints = false,
+					includeInlayFunctionLikeReturnTypeHints = false,
+				},
+				-- Separate diagnostic server for better responsiveness
+				separate_diagnostic_server = true,
+				-- Don't report style issues (let eslint handle those)
+				publish_diagnostic_on = "insert_leave",
+			},
+			on_attach = require("config.lsp").on_attach,
+		},
+	},
 	{
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
@@ -281,15 +304,15 @@ return {
 				"embedded_template",
 			})
 
-			-- Enable treesitter highlighting for all supported filetypes
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = {
-					"lua", "vim", "bash", "sh", "json", "yaml", "javascript", "typescript",
-					"typescriptreact", "javascriptreact", "css", "markdown", "go", "python",
-					"ruby", "eruby",
-				},
+			-- Enable treesitter highlighting for all buffers with a parser
+			vim.api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
 				callback = function()
-					pcall(vim.treesitter.start)
+					local buf = vim.api.nvim_get_current_buf()
+					-- Only start if parser exists and highlighter isn't already active
+					if vim.treesitter.get_parser(buf, nil, { error = false })
+						and not vim.treesitter.highlighter.active[buf] then
+						pcall(vim.treesitter.start)
+					end
 				end,
 			})
 

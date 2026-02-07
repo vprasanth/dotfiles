@@ -81,15 +81,12 @@ M.setup = function()
 		max_concurrent_installers = 4, -- Limit concurrent installations
 	})
 
-	-- Configure Mason LSP installer
+	-- Configure Mason LSP installer (TS/JS handled by typescript-tools.nvim)
 	require("mason-lspconfig").setup({
 		ensure_installed = {
 			"lua_ls",
-			"vtsls",
 			"ruff",
 			"gopls",
-			-- Remove rubocop from LSP, use it via formatter instead
-			-- Remove solargraph to avoid conflicts with ruby_lsp
 		},
 		automatic_installation = false,
 	})
@@ -148,35 +145,8 @@ M.setup = function()
 				},
 			},
 		},
-		-- TypeScript/JavaScript language server configuration
-		vtsls = {
-			cmd = { vim.fn.stdpath("data") .. "/mason/bin/vtsls", "--stdio" },
-			filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-			root_markers = { "tsconfig.json", "package.json", ".git" },
-			settings = {
-				vtsls = {
-					autoUseWorkspaceTsdk = true,
-					experimental = {
-						maxInlayHintLength = 40,
-					},
-				},
-				typescript = {
-					updateImportsOnFileMove = "always",
-					preferences = {
-						includePackageJsonInImports = "off",
-					},
-					inlayHints = { enabled = true },
-				},
-				javascript = {
-					updateImportsOnFileMove = "always",
-					preferences = {
-						includePackageJsonInImports = "off",
-					},
-					inlayHints = { enabled = true },
-				},
-			},
-			single_file_support = false,
-		},
+		-- TypeScript/JavaScript is handled by typescript-tools.nvim (see plugins.lua)
+		-- Using native Neovim integration for better performance in large projects
 		-- Python linter/formatter
 		ruff = {
 			cmd = { "ruff", "server" },
@@ -230,10 +200,9 @@ M.setup = function()
 		},
 	}
 
-	-- List of LSP servers to configure
+	-- List of LSP servers to configure (TS/JS handled by typescript-tools.nvim)
 	local servers = {
 		"lua_ls",
-		"vtsls",
 		"ruff",
 		"gopls",
 	}
@@ -251,6 +220,28 @@ M.setup = function()
 		settings.filetypes = { "ruby", "eruby" }
 		vim.lsp.config(server, settings)
 		vim.lsp.enable(server)
+	end
+
+	-- Workaround for ruby-lsp returning relative paths instead of file:// URIs
+	-- See: https://github.com/Shopify/ruby-lsp/issues
+	local original_locations_to_items = vim.lsp.util.locations_to_items
+	vim.lsp.util.locations_to_items = function(locations, offset_encoding)
+		for _, loc in ipairs(locations) do
+			local uri = loc.uri or loc.targetUri
+			if uri and not uri:match("^%w+://") then
+				local absolute_path = uri
+				if not vim.startswith(uri, "/") then
+					absolute_path = vim.fn.getcwd() .. "/" .. uri
+				end
+				if loc.uri then
+					loc.uri = "file://" .. absolute_path
+				end
+				if loc.targetUri then
+					loc.targetUri = "file://" .. absolute_path
+				end
+			end
+		end
+		return original_locations_to_items(locations, offset_encoding)
 	end
 end
 
