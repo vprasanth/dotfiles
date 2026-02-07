@@ -13,22 +13,18 @@ M.setup = function()
   vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
   vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, { desc = "Show diagnostics in location list" })
 
-  -- Configure diagnostic signs
+  -- Configure diagnostic sign text (replaces deprecated sign_define usage)
   local signs = {
-    Error = "✗",
-    Warn = "⚠",
-    Info = "ℹ",
-    Hint = "💡",
+    [vim.diagnostic.severity.ERROR] = "✗",
+    [vim.diagnostic.severity.WARN] = "⚠",
+    [vim.diagnostic.severity.INFO] = "ℹ",
+    [vim.diagnostic.severity.HINT] = "💡",
   }
-  for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-  end
 
   -- Configure diagnostic display
   vim.diagnostic.config({
     virtual_text = true, -- Show virtual text
-    signs = true, -- Show signs in the sign column
+    signs = { text = signs }, -- Show signs in the sign column
     underline = true, -- Underline the text
     update_in_insert = false, -- Don't update diagnostics in insert mode
     severity_sort = true, -- Sort diagnostics by severity
