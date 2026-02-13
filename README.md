@@ -1,23 +1,50 @@
 # dotfiles
 
-## stow usage
+Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
-```
-# link kitty configs to home
-stow kitty -t ~
+## Quick start
+
+```bash
+# Check what's installed vs missing
+./install.sh --check
+
+# Interactive install (prompts for each category)
+./install.sh
+
+# Install everything
+./install.sh --all
 ```
 
-# map caps-lock to control on ubuntu
+## Manual stow usage
 
+```bash
+# Link a single package
+cd stow && stow nvim -t ~
+
+# Link multiple packages
+cd stow && stow nvim tmux zsh git -t ~
 ```
+
+## What's included
+
+| Package | Description |
+|---------|-------------|
+| nvim | Neovim config (lazy.nvim, LSP, Telescope) |
+| tmux | Tmux with vim-style navigation |
+| zsh | Minimal zsh config (fzf, zoxide, fnm) |
+| git | Git user config |
+| karabiner | Keyboard remapping (caps→ctrl) |
+| btop | System monitor |
+
+## Caps Lock → Control
+
+**macOS**: Handled by Karabiner-Elements (stow package)
+
+**Ubuntu**:
+```bash
 sudo vim /etc/default/keyboard
-// add
-XKBOPTIONS="ctrl:nocaps"
-
-// then also run
-
+# Add: XKBOPTIONS="ctrl:nocaps"
 setxkbmap -option ctrl:nocaps
 ```
 
-## remap on arch
-https://wiki.archlinux.org/index.php/xmodmap#Turn_CapsLock_into_Control
+**Arch**: See [xmodmap wiki](https://wiki.archlinux.org/index.php/xmodmap#Turn_CapsLock_into_Control)

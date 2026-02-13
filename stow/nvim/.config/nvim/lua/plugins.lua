@@ -386,6 +386,25 @@ return {
 		},
 	},
 
+	-- [[ Keymap Helper ]]
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		opts = {
+			delay = 300, -- delay before showing popup (ms)
+			icons = {
+				mappings = false, -- disable icons for cleaner look
+			},
+			spec = {
+				{ "<leader>f", group = "find" },
+				{ "<leader>g", group = "git" },
+				{ "<leader>d", group = "diagnostics" },
+				{ "<leader>p", group = "notes" },
+				{ "<leader>t", group = "terminal" },
+			},
+		},
+	},
+
 	-- [[ Editor Enhancement ]]
 	{
 		"nvim-treesitter/nvim-treesitter",
