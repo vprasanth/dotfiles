@@ -8,6 +8,9 @@ Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).
 # Check what's installed vs missing
 ./install.sh --check
 
+# Pick individual formulas to install (uses fzf if available)
+./install.sh --pick
+
 # Interactive install (prompts for each category)
 ./install.sh
 

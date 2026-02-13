@@ -24,11 +24,12 @@ dotfiles/
 ```bash
 ./install.sh           # Interactive mode
 ./install.sh --check   # Show status of all packages
+./install.sh --pick    # Pick individual formulas (fzf if available, else numbered menu)
 ./install.sh --all     # Install everything
 ```
 
 The script manages:
-- Homebrew formulas: stow, neovim, tmux, ripgrep, fd, fzf, bat, zoxide, fnm
+- Homebrew formulas: stow, neovim, tmux, ripgrep, fd, fzf, bat, zoxide, fnm, eza, git-delta, lazygit, jq, gh, tldr, htop, tree, glow, jwt-cli
 - Homebrew casks: ghostty, font-agave-nerd-font, karabiner-elements
 - Stow packages: nvim, tmux, zsh, git, karabiner
 

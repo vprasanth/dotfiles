@@ -1,13 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 #
 # Dotfiles installer
 # Usage:
 #   ./install.sh           # Interactive mode - select what to install
 #   ./install.sh --check   # Check what's installed vs missing
+#   ./install.sh --pick    # Pick individual formulas to install
 #   ./install.sh --all     # Install everything without prompting
 #
 
 set -euo pipefail
+
+# Ensure core utilities are available
+EXTRA_PATH="/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
+export PATH="$EXTRA_PATH:$PATH"
+echo "Added to PATH: $EXTRA_PATH"
 
 # ============================================================================
 # Configuration - Add new packages here
@@ -24,6 +30,16 @@ FORMULAS=(
   bat
   zoxide
   fnm
+  eza
+  git-delta
+  lazygit
+  jq
+  gh
+  tldr
+  htop
+  tree
+  glow
+  mike-engel/jwt-cli/jwt-cli
 )
 
 # Homebrew casks (GUI apps)
@@ -58,11 +74,15 @@ warn()    { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error()   { echo -e "${RED}[ERROR]${NC} $1"; }
 
 is_installed() {
-  command -v "$1" &>/dev/null
+  which "$1" &>/dev/null
 }
 
 is_formula_installed() {
-  brew list --formula "$1" &>/dev/null 2>&1
+  local formula="$1"
+  local cmd="${formula##*/}"  # Extract command name (handles taps like mike-engel/jwt-cli/jwt-cli)
+
+  # Check if binary exists on system (regardless of install method)
+  which "$cmd" &>/dev/null || brew list --formula "$formula" &>/dev/null 2>&1
 }
 
 is_cask_installed() {
@@ -193,7 +213,8 @@ link_stow_packages() {
 prompt_yes_no() {
   local prompt="$1"
   local response
-  read -rp "$prompt [y/N] " response
+  echo -n "$prompt [y/N] "
+  read -r response
   [[ "$response" =~ ^[Yy]$ ]]
 }
 
@@ -229,6 +250,69 @@ install_all() {
   success "Done!"
 }
 
+pick_and_install() {
+  local missing=()
+  local formula cmd
+
+  # Collect missing formulas
+  for formula in "${FORMULAS[@]}"; do
+    cmd="${formula##*/}"
+    if ! which "$cmd" &>/dev/null && ! brew list --formula "$formula" &>/dev/null 2>&1; then
+      missing+=("$formula")
+    fi
+  done
+
+  if [[ ${#missing[@]} -eq 0 ]]; then
+    success "All formulas already installed"
+    return
+  fi
+
+  local to_install=()
+
+  if which fzf &>/dev/null; then
+    # Use fzf for multi-select
+    info "Select formulas to install (TAB to select, ENTER to confirm):"
+    local selected
+    selected=$(printf '%s\n' "${missing[@]}" | fzf --multi --height=40% --reverse --border --header="TAB=select, ENTER=confirm, ESC=cancel")
+    [[ -z "$selected" ]] && return
+    to_install=(${(f)selected})
+  else
+    # Fallback to numbered menu
+    echo ""
+    info "Missing formulas:"
+    for i in {1..${#missing[@]}}; do
+      echo "  $i) ${missing[$i]}"
+    done
+    echo ""
+    echo "Enter numbers to install (e.g., 1 3 4), 'a' for all, or 'q' to quit:"
+    read -r selection
+
+    [[ "$selection" == "q" ]] && return
+
+    if [[ "$selection" == "a" ]]; then
+      to_install=("${missing[@]}")
+    else
+      for num in ${=selection}; do
+        if [[ "$num" =~ ^[0-9]+$ ]] && (( num >= 1 && num <= ${#missing[@]} )); then
+          to_install+=("${missing[$num]}")
+        fi
+      done
+    fi
+  fi
+
+  if [[ ${#to_install[@]} -eq 0 ]]; then
+    warn "No valid selection"
+    return
+  fi
+
+  echo ""
+  info "Will install: ${to_install[*]}"
+  if prompt_yes_no "Proceed?"; then
+    brew install "${to_install[@]}"
+    success "Done!"
+  fi
+}
+
 # ============================================================================
 # Main
 # ============================================================================
@@ -243,11 +327,15 @@ main() {
     --all|-a)
       install_all
       ;;
+    --pick|-p)
+      pick_and_install
+      ;;
     --help|-h)
       echo "Usage: $0 [OPTIONS]"
       echo ""
       echo "Options:"
       echo "  --check, -c    Show what's installed vs missing"
+      echo "  --pick, -p     Pick individual formulas to install"
       echo "  --all, -a      Install everything without prompting"
       echo "  --help, -h     Show this help"
       echo ""
