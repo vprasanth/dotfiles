@@ -35,7 +35,7 @@ FORMULAS=(
   lazygit
   jq
   gh
-  tldr
+  tlrc
   htop
   tree
   glow
