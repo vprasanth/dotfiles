@@ -47,6 +47,7 @@ CASKS=(
   ghostty
   font-agave-nerd-font
   karabiner-elements
+  rectangle
 )
 
 # Stow packages to link (subdirectories of ./stow)
