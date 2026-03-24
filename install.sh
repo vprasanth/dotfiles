@@ -40,6 +40,8 @@ FORMULAS=(
   tree
   glow
   mike-engel/jwt-cli/jwt-cli
+  tree-sitter
+  tree-sitter-cli
 )
 
 # Homebrew casks (GUI apps)
