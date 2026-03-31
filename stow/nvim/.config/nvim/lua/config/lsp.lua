@@ -103,9 +103,6 @@ M.setup = function()
 		on_attach = M.on_attach,
 		flags = M.flags,
 		capabilities = capabilities,
-		init_options = {
-			position_encoding = "utf-16", -- Consistent position encoding for all servers
-		},
 	}
 
 	-- Server-specific settings and configurations

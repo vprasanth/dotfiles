@@ -288,8 +288,27 @@ return {
 							end
 						end
 					end
-					target = target or "origin/main"
-					vim.cmd("DiffviewOpen " .. target .. "...HEAD")
+					if not target then
+						-- Auto-detect default branch from remote HEAD
+						local ref = vim.fn.systemlist("git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null")
+						if vim.v.shell_error == 0 and ref[1] then
+							target = ref[1]:gsub("refs/remotes/", "")
+						else
+							for _, candidate in ipairs({ "origin/main", "origin/master" }) do
+								vim.fn.system("git rev-parse --verify " .. candidate .. " 2>/dev/null")
+								if vim.v.shell_error == 0 then
+									target = candidate
+									break
+								end
+							end
+						end
+						target = target or "origin/main"
+					end
+					vim.ui.input({ prompt = "Compare against: ", default = target }, function(input)
+						if input and input ~= "" then
+							vim.cmd("DiffviewOpen " .. input .. "...HEAD")
+						end
+					end)
 				end,
 				desc = "Diffview compare vs target",
 			},
