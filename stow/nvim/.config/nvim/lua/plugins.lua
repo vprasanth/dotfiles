@@ -451,6 +451,9 @@ return {
 				"python",
 				"ruby",
 				"embedded_template",
+				"elixir",
+				"heex",
+				"eex",
 			})
 
 			-- Enable treesitter highlighting for all buffers with a parser
@@ -608,7 +611,16 @@ return {
 				logging = true,
 				log_level = vim.log.levels.WARN,
 				filetype = {
-					ruby = { rubocopConfig },
+					elixir = {
+						function()
+							return {
+								exe = "mix",
+								args = { "format", "-" },
+								stdin = true,
+							}
+						end,
+					},
+				ruby = { rubocopConfig },
 					json = { prettierConfig },
 					html = { prettierConfig },
 					javascript = { eslintConfig, prettierConfig },

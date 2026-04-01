@@ -169,6 +169,18 @@ M.setup = function()
 				},
 			},
 		},
+		-- Elixir language server configuration
+		elixirls = {
+			cmd = { "elixir-ls" },
+			filetypes = { "elixir", "eelixir", "heex", "surface" },
+			root_markers = { "mix.exs", ".git" },
+			settings = {
+				elixirLS = {
+					dialyzerEnabled = true,
+					fetchDeps = false,
+				},
+			},
+		},
 		-- Add ruby_lsp configuration
 		ruby_lsp = {
 			cmd = { "ruby-lsp" },
@@ -202,6 +214,7 @@ M.setup = function()
 		"lua_ls",
 		"ruff",
 		"gopls",
+		"elixirls",
 	}
 
 	-- Configure each LSP server with common and server-specific settings

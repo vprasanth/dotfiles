@@ -3,3 +3,4 @@ plugin/
 plugins/
 **.DS_Store
 **.bak
+stow/nvim/.config/nvim/lazy-lock.json
