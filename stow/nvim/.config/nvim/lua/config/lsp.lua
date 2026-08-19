@@ -161,6 +161,14 @@ M.setup = function()
 		-- Ruby type checker configuration
 		sorbet = {
 			cmd = { "bundle", "exec", "srb", "tc", "--lsp" },
+			-- ruby-lsp is the canonical document-symbol provider (richer, nested output).
+			-- Stop sorbet from also answering textDocument/documentSymbol so telescope
+			-- doesn't fan out to two providers and warn "No results" on whichever returns
+			-- empty for the current buffer. Sorbet still handles type-checking/diagnostics.
+			on_attach = function(client, bufnr)
+				client.server_capabilities.documentSymbolProvider = nil
+				M.on_attach(client, bufnr)
+			end,
 			settings = {
 				sorbet = {
 					commandPath = "bundle exec srb",
@@ -186,6 +194,18 @@ M.setup = function()
 			cmd = { "ruby-lsp" },
 			init_options = {
 				experimentalFeaturesEnabled = false,
+				-- Skip indexing dead historical migrations/data (~6.2k files, ~21% of the
+				-- repo's Ruby). These dirs are never navigated to; RuboCop already ignores
+				-- db/archived. Cuts ruby-lsp startup indexing and memory significantly.
+				-- (Specs are already excluded by ruby-lsp's default excluded_patterns.)
+				indexing = {
+					excluded_patterns = {
+						"db/archived/**/*.rb",
+						"db/archived_migrations/**/*.rb",
+						"db/archived_data_migrations/**/*.rb",
+						"db/erp_archived_migrations/**/*.rb",
+					},
+				},
 				enabledFeatures = {
 					codeActions = true,
 					codeLens = false,
@@ -232,26 +252,57 @@ M.setup = function()
 		vim.lsp.enable(server)
 	end
 
-	-- Workaround for ruby-lsp returning relative paths instead of file:// URIs
+	-- Workaround for ruby-lsp/sorbet returning relative paths instead of file:// URIs
+	-- (e.g. "lib/tasks/wearables.rake"). Neovim 0.12's uri_to_fname rejects these with
+	-- "URI must contain a scheme". Normalize a schemeless uri to file://, resolving
+	-- relative paths against the LSP client's root_dir (falling back to cwd).
 	-- See: https://github.com/Shopify/ruby-lsp/issues
+	local function normalize_uri(uri, client)
+		if not uri or uri:match("^%w+://") then
+			return uri
+		end
+		local absolute_path = uri
+		if not vim.startswith(uri, "/") then
+			local base = (client and client.root_dir) or vim.fn.getcwd()
+			absolute_path = base .. "/" .. uri
+		end
+		return "file://" .. absolute_path
+	end
+
+	-- Pick an attached client that has a root_dir; ruby clients share the project root.
+	local function client_with_root(bufnr)
+		for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+			if client.root_dir then
+				return client
+			end
+		end
+		return nil
+	end
+
+	-- go-to-definition / references path
 	local original_locations_to_items = vim.lsp.util.locations_to_items
 	vim.lsp.util.locations_to_items = function(locations, offset_encoding)
+		local client = client_with_root(0)
 		for _, loc in ipairs(locations) do
-			local uri = loc.uri or loc.targetUri
-			if uri and not uri:match("^%w+://") then
-				local absolute_path = uri
-				if not vim.startswith(uri, "/") then
-					absolute_path = vim.fn.getcwd() .. "/" .. uri
-				end
-				if loc.uri then
-					loc.uri = "file://" .. absolute_path
-				end
-				if loc.targetUri then
-					loc.targetUri = "file://" .. absolute_path
-				end
+			if loc.uri then
+				loc.uri = normalize_uri(loc.uri, client)
+			end
+			if loc.targetUri then
+				loc.targetUri = normalize_uri(loc.targetUri, client)
 			end
 		end
 		return original_locations_to_items(locations, offset_encoding)
+	end
+
+	-- diagnostics path (the one that throws on .rake files); ctx.client_id identifies
+	-- the exact server that published, so we resolve against its root_dir.
+	local original_diagnostics_handler = vim.lsp.handlers["textDocument/publishDiagnostics"]
+	vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+		if result and result.uri then
+			local client = ctx and ctx.client_id and vim.lsp.get_client_by_id(ctx.client_id)
+			result.uri = normalize_uri(result.uri, client)
+		end
+		return original_diagnostics_handler(err, result, ctx, config)
 	end
 end
 

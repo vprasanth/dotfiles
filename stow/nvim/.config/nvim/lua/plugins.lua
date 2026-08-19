@@ -27,27 +27,27 @@ return {
 		"nvim-lualine/lualine.nvim",
 		event = "VeryLazy",
 		dependencies = { "kyazdani42/nvim-web-devicons" },
-			opts = {
-				options = {
-					theme = "auto",
-					globalstatus = true,
-				},
-				sections = {
-					lualine_x = {
-						function()
-							if vim.bo.filetype ~= "yaml" then
-								return ""
-							end
-							local yaml = package.loaded["yaml_nvim"]
-							if yaml and yaml.get_yaml_key_and_value then
-								return yaml.get_yaml_key_and_value()
-							end
+		opts = {
+			options = {
+				theme = "auto",
+				globalstatus = true,
+			},
+			sections = {
+				lualine_x = {
+					function()
+						if vim.bo.filetype ~= "yaml" then
 							return ""
-						end,
-					},
+						end
+						local yaml = package.loaded["yaml_nvim"]
+						if yaml and yaml.get_yaml_key_and_value then
+							return yaml.get_yaml_key_and_value()
+						end
+						return ""
+					end,
 				},
 			},
 		},
+	},
 	{
 		"nvim-tree/nvim-tree.lua",
 		cmd = { "NvimTreeToggle", "NvimTreeFocus" },
@@ -110,18 +110,90 @@ return {
 		version = "0.1.x",
 		cmd = "Telescope",
 		keys = {
-			{ "<LEADER>ff", function() require("telescope.builtin").find_files() end, desc = "Find files" },
-			{ "<LEADER>fg", function() require("telescope.builtin").live_grep() end, desc = "Live grep" },
-			{ "<LEADER>fb", function() require("telescope.builtin").buffers() end, desc = "Find buffers" },
-			{ "<LEADER>fh", function() require("telescope.builtin").help_tags() end, desc = "Find help tags" },
-			{ "<LEADER>fm", function() require("telescope.builtin").marks() end, desc = "Find marks" },
-			{ "<LEADER>ft", function() require("telescope.builtin").treesitter() end, desc = "Find treesitter symbols" },
-			{ "<LEADER>fa", function() require("telescope.builtin").git_files() end, desc = "Find git files" },
-			{ "<LEADER>fc", function() require("telescope.builtin").git_status() end, desc = "Find git files from status" },
-			{ "<LEADER>fo", function() require("telescope.builtin").oldfiles() end, desc = "Find old files" },
-			{ "<LEADER>fr", function() require("telescope.builtin").lsp_references() end, desc = "Find LSP references" },
-			{ "<LEADER>fd", function() require("telescope.builtin").lsp_definitions() end, desc = "Find LSP definitions" },
-			{ "<LEADER>fs", function() require("telescope.builtin").lsp_document_symbols() end, desc = "Find LSP document symbols" },
+			{
+				"<LEADER>ff",
+				function()
+					require("telescope.builtin").find_files()
+				end,
+				desc = "Find files",
+			},
+			{
+				"<LEADER>fg",
+				function()
+					require("telescope.builtin").live_grep()
+				end,
+				desc = "Live grep",
+			},
+			{
+				"<LEADER>fb",
+				function()
+					require("telescope.builtin").buffers()
+				end,
+				desc = "Find buffers",
+			},
+			{
+				"<LEADER>fh",
+				function()
+					require("telescope.builtin").help_tags()
+				end,
+				desc = "Find help tags",
+			},
+			{
+				"<LEADER>fm",
+				function()
+					require("telescope.builtin").marks()
+				end,
+				desc = "Find marks",
+			},
+			{
+				"<LEADER>ft",
+				function()
+					require("telescope.builtin").treesitter()
+				end,
+				desc = "Find treesitter symbols",
+			},
+			{
+				"<LEADER>fa",
+				function()
+					require("telescope.builtin").git_files()
+				end,
+				desc = "Find git files",
+			},
+			{
+				"<LEADER>fc",
+				function()
+					require("telescope.builtin").git_status()
+				end,
+				desc = "Find git files from status",
+			},
+			{
+				"<LEADER>fo",
+				function()
+					require("telescope.builtin").oldfiles()
+				end,
+				desc = "Find old files",
+			},
+			{
+				"<LEADER>fr",
+				function()
+					require("telescope.builtin").lsp_references()
+				end,
+				desc = "Find LSP references",
+			},
+			{
+				"<LEADER>fd",
+				function()
+					require("telescope.builtin").lsp_definitions()
+				end,
+				desc = "Find LSP definitions",
+			},
+			{
+				"<LEADER>fs",
+				function()
+					require("telescope.builtin").lsp_document_symbols()
+				end,
+				desc = "Find LSP document symbols",
+			},
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -179,6 +251,8 @@ return {
 			telescope.setup(opts)
 			pcall(telescope.load_extension, "fzy_native")
 			pcall(telescope.load_extension, "live_grep_args")
+			-- Keeps a still-running picker job from making Neovim unquittable.
+			require("config.telescope_pipe_fix").setup()
 		end,
 	},
 
@@ -243,7 +317,13 @@ return {
 		"lewis6991/gitsigns.nvim",
 		event = "VeryLazy",
 		keys = {
-			{ "<LEADER>gb", function() require("gitsigns").blame_line() end, desc = "Git blame line" },
+			{
+				"<LEADER>gb",
+				function()
+					require("gitsigns").blame_line()
+				end,
+				desc = "Git blame line",
+			},
 		},
 		opts = {
 			signs = {
@@ -397,8 +477,20 @@ return {
 	{
 		"folke/snacks.nvim",
 		keys = {
-			{ "<LEADER>.", function() Snacks.scratch() end, desc = "Scratch buffer" },
-			{ "<LEADER>S", function() Snacks.scratch.select() end, desc = "Scratch buffer select" },
+			{
+				"<LEADER>.",
+				function()
+					Snacks.scratch()
+				end,
+				desc = "Scratch buffer",
+			},
+			{
+				"<LEADER>S",
+				function()
+					Snacks.scratch.select()
+				end,
+				desc = "Scratch buffer select",
+			},
 		},
 		opts = {
 			scratch = { enabled = true },
@@ -415,6 +507,7 @@ return {
 				mappings = false, -- disable icons for cleaner look
 			},
 			spec = {
+				{ "<leader>c", group = "ai" },
 				{ "<leader>f", group = "find" },
 				{ "<leader>g", group = "git" },
 				{ "<leader>d", group = "diagnostics" },
@@ -461,8 +554,10 @@ return {
 				callback = function()
 					local buf = vim.api.nvim_get_current_buf()
 					-- Only start if parser exists and highlighter isn't already active
-					if vim.treesitter.get_parser(buf, nil, { error = false })
-						and not vim.treesitter.highlighter.active[buf] then
+					if
+						vim.treesitter.get_parser(buf, nil, { error = false })
+						and not vim.treesitter.highlighter.active[buf]
+					then
 						pcall(vim.treesitter.start)
 					end
 				end,
@@ -592,7 +687,12 @@ return {
 				end
 				return {
 					exe = "eslint_d",
-					args = { "--stdin", "--stdin-filename", util.escape_path(util.get_current_buffer_file_path()), "--fix" },
+					args = {
+						"--stdin",
+						"--stdin-filename",
+						util.escape_path(util.get_current_buffer_file_path()),
+						"--fix",
+					},
 					stdin = true,
 				}
 			end
@@ -620,7 +720,7 @@ return {
 							}
 						end,
 					},
-				ruby = { rubocopConfig },
+					ruby = { rubocopConfig },
 					json = { prettierConfig },
 					html = { prettierConfig },
 					javascript = { eslintConfig, prettierConfig },
